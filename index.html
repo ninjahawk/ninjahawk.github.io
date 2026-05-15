@@ -20,13 +20,14 @@
     h1 {
       font-size: 2rem;
       letter-spacing: 0.02em;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
     }
 
     .bio {
-      font-size: 1.05rem;
-      color: #555;
+      font-size: 1rem;
+      color: #444;
       margin-bottom: 28px;
+      max-width: 620px;
     }
 
     .links {
@@ -87,6 +88,18 @@
       margin-top: 3px;
     }
 
+    .contact p {
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    .contact a {
+      color: #2a6496;
+      text-decoration: none;
+    }
+
+    .contact a:hover { text-decoration: underline; }
+
     footer {
       font-size: 0.8rem;
       color: #bbb;
@@ -98,36 +111,43 @@
 <body>
 
   <h1>Nathan Langley</h1>
-  <p class="bio">Physics and AI are my passions.</p>
+
+  <p class="bio">
+    I'm a student researcher working independently at the intersection of physics and AI.
+    My work spans theoretical questions about intelligence and recursive self-improvement,
+    computational models of emergent behavior, and physics-grounded research into quantum teleportation.
+    I'm interested in collaborating with researchers and open to opportunities where these fields meet.
+  </p>
 
   <div class="links">
     <a href="https://github.com/ninjahawk" target="_blank">GitHub</a>
     <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a>
     <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
-    <!-- Add arXiv link when you have it:
-    <a href="YOUR_ARXIV_AUTHOR_URL" target="_blank">arXiv</a>
+    <!-- Add arXiv link when available:
+    <a href="YOUR_ARXIV_URL" target="_blank">arXiv</a>
     -->
   </div>
 
   <section>
-    <h2>Papers</h2>
+    <h2>Research</h2>
 
     <div class="project">
-      <!-- When you have the PDF, add it to this folder as singleton-attractors.pdf
-           and change the href below to "singleton-attractors.pdf" -->
-      <a href="https://github.com/ninjahawk/singleton-attractor" target="_blank">
-        Singleton Attractors
-      </a>
+      <!-- When endorsed/published, swap href to arXiv URL or "singleton-attractors.pdf" -->
+      <a href="https://github.com/ninjahawk/singleton-attractor" target="_blank">Singleton Attractors</a>
       <span class="tag">preprint</span>
       <p>Why one dominant intelligence is the inevitable long-run outcome in any competitive recursive-improvement environment.</p>
     </div>
 
     <div class="project">
-      <a href="https://github.com/ninjahawk/teleporty" target="_blank">
-        Teleportation Research
-      </a>
-      <span class="tag">preprint</span>
-      <p>Physics-grounded teleportation research.</p>
+      <a href="https://github.com/ninjahawk/teleporty" target="_blank">Teleportation Research</a>
+      <span class="tag">in progress</span>
+      <p>Physics-grounded research into the theoretical and practical basis for quantum teleportation.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a>
+      <span class="tag">repo</span>
+      <p>Computational simulations of emergent flocking, phase transitions, and predator-prey dynamics.</p>
     </div>
 
   </section>
@@ -142,15 +162,15 @@
     </div>
 
     <div class="project">
-      <a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a>
-      <span class="tag">repo</span>
-      <p>Computational simulations of emergent flocking, phase transitions, and predator-prey dynamics.</p>
-    </div>
-
-    <div class="project">
       <a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a>
       <span class="tag">repo</span>
       <p>An 8-bit computer built from a single NAND gate, with a live-evolving neural net and virtual CPU.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter" target="_blank">Unit Converter</a>
+      <span class="tag">android</span>
+      <p>A unit conversion app published on the Google Play Store.</p>
     </div>
 
     <div class="project">
@@ -165,6 +185,14 @@
       <p>A desktop pet powered by a local LLM — a tiny AI crab who wanders your screen, reacts to your cursor, and has opinions about your file organization.</p>
     </div>
 
+  </section>
+
+  <section class="contact">
+    <h2>Contact</h2>
+    <p>
+      Open to collaboration and opportunities.<br />
+      <a href="mailto:nlangley1868@gmail.com">nlangley1868@gmail.com</a>
+    </p>
   </section>
 
   <footer>ninjahawk.github.io</footer>
