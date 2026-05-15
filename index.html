@@ -20,21 +20,28 @@
     h1 {
       font-size: 2rem;
       letter-spacing: 0.02em;
-      margin-bottom: 10px;
+      margin-bottom: 4px;
     }
 
-    .bio {
-      font-size: 1rem;
-      color: #444;
-      margin-bottom: 28px;
-      max-width: 620px;
+    .subtitle {
+      font-size: 0.9rem;
+      font-family: monospace;
+      color: #888;
+      margin-bottom: 16px;
     }
 
     .links {
       display: flex;
       gap: 18px;
       flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .bio {
+      font-size: 1rem;
+      color: #444;
       margin-bottom: 48px;
+      max-width: 620px;
     }
 
     .links a {
@@ -82,6 +89,14 @@
       vertical-align: middle;
     }
 
+    .project .stars {
+      font-size: 0.78rem;
+      font-family: monospace;
+      color: #999;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
     .project p {
       font-size: 0.92rem;
       color: #555;
@@ -111,13 +126,7 @@
 <body>
 
   <h1>Nathan Langley</h1>
-
-  <p class="bio">
-    I'm a student researcher working independently at the intersection of physics and AI.
-    My work spans theoretical questions about intelligence and recursive self-improvement,
-    computational models of emergent behavior, and physics-grounded research into quantum teleportation.
-    I'm interested in collaborating with researchers and open to opportunities where these fields meet.
-  </p>
+  <p class="subtitle">B.S. Physics, expected December 2026</p>
 
   <div class="links">
     <a href="https://github.com/ninjahawk" target="_blank">GitHub</a>
@@ -127,6 +136,13 @@
     <a href="YOUR_ARXIV_URL" target="_blank">arXiv</a>
     -->
   </div>
+
+  <p class="bio">
+    I'm a student researcher working independently at the intersection of physics and AI.
+    My work spans theoretical questions about intelligence and recursive self-improvement,
+    computational models of emergent behavior, and physics-grounded research into quantum teleportation.
+    I'm interested in collaborating with researchers and open to opportunities where these fields meet.
+  </p>
 
   <section>
     <h2>Research</h2>
@@ -157,12 +173,14 @@
     <div class="project">
       <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a>
       <span class="tag">repo</span>
+      <span class="stars">★ 249</span>
       <p>Open-source self-modifying agentic system built for consumer hardware.</p>
     </div>
 
     <div class="project">
       <a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a>
       <span class="tag">repo</span>
+      <span class="stars">★ 12</span>
       <p>An 8-bit computer built from a single NAND gate, with a live-evolving neural net and virtual CPU.</p>
     </div>
 
@@ -181,6 +199,7 @@
     <div class="project">
       <a href="https://github.com/ninjahawk/KillClawd" target="_blank">KillClawd</a>
       <span class="tag">repo</span>
+      <span class="stars">★ 13</span>
       <p>A desktop pet powered by a local LLM — a tiny AI crab who wanders your screen, reacts to your cursor, and has opinions about your file organization.</p>
     </div>
 
