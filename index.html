@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nathan Langley</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, serif;
+      background: #fafafa;
+      color: #222;
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 0 24px 80px;
+      line-height: 1.7;
+    }
+
+    h1 {
+      font-size: 2rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+
+    .bio {
+      font-size: 1.05rem;
+      color: #555;
+      margin-bottom: 28px;
+    }
+
+    .links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .links a {
+      color: #2a6496;
+      text-decoration: none;
+      font-family: monospace;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #aac4df;
+      padding-bottom: 1px;
+    }
+
+    .links a:hover { color: #1a3f60; border-color: #1a3f60; }
+
+    h2 {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+    }
+
+    section { margin-bottom: 48px; }
+
+    .project { margin-bottom: 22px; }
+
+    .project a {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #2a6496;
+      text-decoration: none;
+    }
+
+    .project a:hover { text-decoration: underline; }
+
+    .project .tag {
+      font-size: 0.75rem;
+      font-family: monospace;
+      background: #e8f0f7;
+      color: #2a6496;
+      border-radius: 3px;
+      padding: 1px 6px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .project p {
+      font-size: 0.92rem;
+      color: #555;
+      margin-top: 3px;
+    }
+
+    footer {
+      font-size: 0.8rem;
+      color: #bbb;
+      margin-top: 60px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Nathan Langley</h1>
+  <p class="bio">Physics and AI are my passions.</p>
+
+  <div class="links">
+    <a href="https://github.com/ninjahawk" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a>
+    <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
+    <!-- Add arXiv link when you have it:
+    <a href="YOUR_ARXIV_AUTHOR_URL" target="_blank">arXiv</a>
+    -->
+  </div>
+
+  <section>
+    <h2>Papers</h2>
+
+    <div class="project">
+      <!-- When you have the PDF, add it to this folder as singleton-attractors.pdf
+           and change the href below to "singleton-attractors.pdf" -->
+      <a href="https://github.com/ninjahawk/singleton-attractor" target="_blank">
+        Singleton Attractors
+      </a>
+      <span class="tag">preprint</span>
+      <p>Why one dominant intelligence is the inevitable long-run outcome in any competitive recursive-improvement environment.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/teleporty" target="_blank">
+        Teleportation Research
+      </a>
+      <span class="tag">preprint</span>
+      <p>Physics-grounded teleportation research.</p>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>Projects</h2>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a>
+      <span class="tag">repo</span>
+      <p>Open-source self-modifying agentic system built for consumer hardware.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a>
+      <span class="tag">repo</span>
+      <p>Computational simulations of emergent flocking, phase transitions, and predator-prey dynamics.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a>
+      <span class="tag">repo</span>
+      <p>An 8-bit computer built from a single NAND gate, with a live-evolving neural net and virtual CPU.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/ModSync" target="_blank">ModSync</a>
+      <span class="tag">repo</span>
+      <p>Real-time mod queue coordination for Reddit communities — stop working on the same post twice.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/KillClawd" target="_blank">KillClawd</a>
+      <span class="tag">repo</span>
+      <p>A desktop pet powered by a local LLM — a tiny AI crab who wanders your screen, reacts to your cursor, and has opinions about your file organization.</p>
+    </div>
+
+  </section>
+
+  <footer>ninjahawk.github.io</footer>
+
+</body>
+</html>
