@@ -3,322 +3,588 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nathan Langley — AI safety research, live</title>
-<meta name="description" content="Physics senior doing independent AI-safety research. Three interactive exhibits: a live LLM interpretability replay, the ODE system from my recursive self-improvement preprint, and real logs of autonomous agents." />
+<title>Nathan Langley</title>
+<meta name="description" content="Physics senior doing independent AI-safety research: live LLM interpretability, recursive self-improvement dynamics, and autonomous multi-agent systems." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,420;9..144,560&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #f8f6f1;
-    --paper-deep: #f1ede4;
-    --ink: #1f1c17;
-    --muted: #6f695d;
-    --faint: #a39c8c;
-    --rule: #ddd6c6;
-    --accent: #a84e28;
-    --green: #3d7a55;
-    --gold: #96712a;
-    --serif: "Charter", "Bitstream Charter", "Source Serif Pro", Georgia, serif;
-    --display: "Fraunces", Georgia, serif;
+    --bg: #060708;
+    --ink: #e9e6df;
+    --dim: #a7a29a;
+    --faint: #5f5b55;
+    --line: rgba(233, 230, 223, 0.10);
+    --amber: #e8b158;
+    --amber-soft: rgba(232, 177, 88, 0.55);
+    --cyan: #7ec3e8;
+    --violet: #a99be0;
+    --serif: "Newsreader", Georgia, serif;
+    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
     --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body {
-    background: var(--paper);
+    background: var(--bg);
     color: var(--ink);
-    font-family: var(--serif);
-    font-size: 1.06rem;
-    line-height: 1.65;
-    padding: 72px 24px 96px;
-  }
-  .col { max-width: 660px; margin: 0 auto; }
-  .wide { max-width: 860px; margin: 0 auto; }
-  a { color: var(--ink); text-decoration: underline; text-decoration-color: #c8b89c; text-underline-offset: 3px; }
-  a:hover { color: var(--accent); text-decoration-color: var(--accent); }
-
-  /* ── header ── */
-  h1 {
-    font-family: var(--display);
-    font-weight: 560;
-    font-size: clamp(2.5rem, 6vw, 3.4rem);
-    letter-spacing: -0.01em;
-    line-height: 1.1;
-  }
-  .role {
-    font-size: 0.8rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 14px 0 6px;
-  }
-  .links { font-size: 0.92rem; color: var(--muted); margin-bottom: 40px; }
-  .links a { color: var(--muted); margin-right: 14px; }
-  .intro { font-size: 1.1rem; max-width: 620px; }
-  .epigraph {
-    font-family: var(--display);
-    font-style: italic;
-    font-weight: 420;
-    font-size: 1.35rem;
-    color: var(--accent);
-    margin: 36px 0 0;
-  }
-  .epigraph small { display:block; font-family: var(--serif); font-style: normal; font-size: 0.85rem; color: var(--faint); margin-top: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
-
-  /* ── exhibits as figures ── */
-  .exhibit { border-top: 1px solid var(--rule); margin-top: 72px; padding-top: 26px; }
-  .ex-num {
-    font-size: 0.75rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 10px;
-  }
-  .exhibit h2 {
-    font-family: var(--display);
-    font-weight: 560;
-    font-size: clamp(1.6rem, 3.5vw, 2.1rem);
-    line-height: 1.15;
-    margin-bottom: 14px;
-  }
-  .ex-desc { color: #3a362e; max-width: 620px; margin-bottom: 26px; }
-  .figure { margin: 0 auto; }
-  .caption {
-    font-size: 0.9rem;
-    color: var(--muted);
-    max-width: 640px;
-    margin: 14px auto 0;
-  }
-  .caption .fig { font-variant: small-caps; letter-spacing: 0.06em; color: var(--ink); }
-  .footnote {
-    font-size: 0.85rem;
-    color: var(--muted);
-    max-width: 640px;
-    margin: 18px auto 0;
-    padding-left: 20px;
-    text-indent: -20px;
-  }
-  .footnote::before { content: "※ "; color: var(--faint); }
-  .ex-links { font-size: 0.88rem; margin-top: 14px; text-align: center; }
-  .ex-links a { margin: 0 12px; }
-
-  /* ── exhibit 1: the instrument ── */
-  .bezel {
-    background: #171512;
-    border-radius: 12px;
-    padding: 10px;
-    box-shadow: 0 22px 44px -18px rgba(60, 48, 30, 0.35);
-  }
-  .bezel iframe { width: 100%; height: 560px; border: 0; display: block; border-radius: 6px; background: #000; }
-
-  /* ── exhibit 2: simulator ── */
-  .sim-grid { display: grid; grid-template-columns: 1fr 240px; gap: 26px; align-items: start; }
-  @media (max-width: 720px) { .sim-grid { grid-template-columns: 1fr; } }
-  #simCanvas { width: 100%; height: 330px; background: #fbfaf6; border: 1px solid var(--rule); }
-  .controls { font-size: 0.85rem; color: var(--muted); display: flex; flex-direction: column; gap: 16px; padding-top: 4px; }
-  .ctl label { display: flex; justify-content: space-between; margin-bottom: 4px; letter-spacing: 0.04em; }
-  .ctl output { font-family: var(--mono); color: var(--ink); font-size: 0.8rem; }
-  input[type="range"] { width: 100%; accent-color: var(--accent); }
-  .toggle-row { display: flex; align-items: flex-start; gap: 8px; }
-  .toggle-row input { accent-color: var(--accent); margin-top: 4px; }
-  .verdict { font-size: 0.88rem; line-height: 1.5; border-top: 1px solid var(--rule); padding-top: 12px; }
-  .verdict .v-state { font-variant: small-caps; letter-spacing: 0.05em; font-weight: 700; }
-  .calib { font-size: 0.85rem; color: var(--green); margin-top: 16px; text-align: center; }
-  .calib::before { content: "● "; font-size: 0.7rem; vertical-align: 1px; }
-
-  /* ── exhibit 3: log ── */
-  .logbook {
-    border-left: 3px solid var(--rule);
-    background: var(--paper-deep);
-    padding: 18px 22px;
-    font-family: var(--mono);
-    font-size: 0.82rem;
+    font-family: var(--sans);
+    font-size: 15.5px;
     line-height: 1.7;
-    min-height: 240px;
+    overflow-x: hidden;
   }
-  .logbook .row { display: none; padding: 4px 0; }
-  .logbook .row.shown { display: block; animation: fadein 0.5s; }
-  @keyframes fadein { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; } }
-  .t-date { color: var(--faint); margin-right: 10px; }
-  .tag { font-size: 0.72rem; letter-spacing: 0.08em; margin-right: 10px; }
-  .tag.auto { color: var(--accent); }
-  .tag.human { color: #23678c; }
-  .tag.obs { color: var(--gold); }
-  .play-btn {
-    font-family: var(--serif); font-size: 0.92rem; font-style: italic;
-    color: var(--accent); background: none; border: 1px solid var(--accent);
-    border-radius: 20px; padding: 7px 20px; cursor: pointer; margin-bottom: 16px;
-  }
-  .play-btn:hover { background: var(--accent); color: var(--paper); }
+  ::selection { background: rgba(232, 177, 88, 0.25); }
+  a { color: var(--ink); text-decoration: none; border-bottom: 1px solid rgba(232,177,88,0.35); padding-bottom: 1px; transition: color .3s, border-color .3s; }
+  a:hover { color: var(--amber); border-color: var(--amber); }
 
-  /* ── lower sections ── */
-  h3.section {
-    font-family: var(--display); font-weight: 560; font-size: 1.35rem;
-    border-top: 1px solid var(--rule); margin-top: 72px; padding-top: 24px; margin-bottom: 18px;
+  /* film grain */
+  .grain {
+    position: fixed; inset: -50%;
+    width: 200%; height: 200%;
+    pointer-events: none; z-index: 50;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .item { margin-bottom: 18px; }
-  .item .name a { font-weight: 700; text-decoration: none; border-bottom: 1px solid #c8b89c; }
-  .item .name a:hover { border-color: var(--accent); }
-  .item .stars { font-family: var(--mono); font-size: 0.72rem; color: var(--faint); margin-left: 10px; }
-  .item p { color: var(--muted); font-size: 0.95rem; }
-  footer { margin-top: 84px; font-size: 0.8rem; color: var(--faint); font-style: italic; }
+
+  /* persistent chrome */
+  .chrome {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 26px 34px;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--dim);
+    mix-blend-mode: normal;
+    pointer-events: none;
+  }
+  .chrome a, .chrome span { pointer-events: auto; }
+  .chrome .name { color: var(--ink); font-weight: 600; }
+  .chrome .nav a { color: var(--dim); border: 0; margin-left: 22px; }
+  .chrome .nav a:hover { color: var(--amber); }
+
+  /* ─── hero ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+    padding: 0 24px;
+  }
+  .hero-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 45% at 50% 42%, rgba(232,177,88,0.07), transparent 65%);
+    pointer-events: none;
+  }
+  .orb {
+    width: 120px; height: 120px; border-radius: 50%;
+    position: relative;
+    background:
+      radial-gradient(circle at 38% 34%, rgba(255, 236, 200, 0.95), rgba(232, 177, 88, 0.55) 26%, rgba(150, 96, 32, 0.22) 55%, rgba(6,7,8,0) 72%);
+    box-shadow:
+      0 0 60px 8px rgba(232, 177, 88, 0.16),
+      0 0 140px 30px rgba(232, 177, 88, 0.07),
+      inset 0 0 26px 4px rgba(255, 226, 178, 0.25);
+    animation: breathe 6.5s ease-in-out infinite;
+  }
+  .orb::after {
+    content: ""; position: absolute; inset: -34px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 177, 88, 0.14);
+    animation: ring 6.5s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.055); filter: brightness(1.18); }
+  }
+  @keyframes ring {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.06); opacity: 1; }
+  }
+  .dialogue {
+    margin-top: 58px;
+    min-height: 150px;
+    max-width: 640px;
+    text-align: center;
+    font-family: var(--serif);
+    font-optical-sizing: auto;
+    font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .dialogue .line { display: block; opacity: 0; }
+  .dialogue .line.on { opacity: 1; }
+  .dialogue em { font-style: italic; color: var(--amber); }
+  .caret {
+    display: inline-block; width: 2px; height: 1.05em;
+    background: var(--amber); vertical-align: -0.15em; margin-left: 3px;
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .scroll-hint {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
+    color: var(--faint);
+    animation: hint 2.6s ease-in-out infinite;
+  }
+  @keyframes hint { 0%,100% { opacity: .45; transform: translate(-50%, 0);} 50% { opacity: 1; transform: translate(-50%, 6px);} }
+
+  /* ─── companion (mini orb + line) ─── */
+  .companion {
+    position: fixed; left: 30px; bottom: 28px; z-index: 40;
+    display: flex; align-items: center; gap: 14px;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity .7s var(--ease), transform .7s var(--ease);
+    pointer-events: none;
+    max-width: min(460px, 72vw);
+  }
+  .companion.on { opacity: 1; transform: translateY(0); }
+  .mini-orb {
+    flex: 0 0 14px; width: 14px; height: 14px; border-radius: 50%;
+    background: radial-gradient(circle at 36% 32%, #ffe9c4, var(--amber) 55%, rgba(150,96,32,.4));
+    box-shadow: 0 0 14px 2px rgba(232,177,88,.35);
+    animation: breathe 6.5s ease-in-out infinite;
+  }
+  .companion .say {
+    font-family: var(--serif); font-style: italic; font-weight: 300;
+    font-size: 15.5px; color: var(--dim); line-height: 1.45;
+    transition: opacity .45s;
+  }
+
+  /* ─── sections ─── */
+  section.block { position: relative; padding: 15vh 24px; }
+  .inner { max-width: 680px; margin: 0 auto; }
+  .innerwide { max-width: 980px; margin: 0 auto; }
+  .kicker {
+    font-size: 10.5px; letter-spacing: 0.34em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 22px;
+  }
+  .kicker .idx { color: var(--faint); margin-right: 14px; }
+  h2 {
+    font-family: var(--serif); font-optical-sizing: auto;
+    font-weight: 300; font-size: clamp(2.1rem, 5vw, 3.3rem);
+    line-height: 1.12; letter-spacing: 0.002em;
+    margin-bottom: 26px;
+  }
+  .lede { color: var(--dim); font-size: 16.5px; max-width: 620px; margin-bottom: 44px; }
+  .lede b, .lede strong { color: var(--ink); font-weight: 600; }
+  .lede i { color: var(--ink); }
+
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.012);
+    overflow: hidden;
+    box-shadow: 0 30px 80px -30px rgba(0,0,0,0.8);
+  }
+  .panel-pad { padding: 26px; }
+  iframe.viewer { width: 100%; height: 580px; border: 0; display: block; background: #000; }
+
+  .figmeta {
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;
+    margin-top: 18px;
+    font-size: 12px; letter-spacing: 0.08em; color: var(--faint);
+  }
+  .figmeta .links a { color: var(--dim); border-color: rgba(233,230,223,0.2); margin-left: 18px; font-size: 12px; letter-spacing: 0.08em; }
+  .figmeta .links a:hover { color: var(--amber); }
+  .footnote {
+    margin-top: 22px; max-width: 620px;
+    font-size: 13px; color: var(--faint); line-height: 1.65;
+  }
+  .footnote b { color: var(--dim); }
+
+  /* reveal choreography */
+  .reveal { opacity: 0; transform: translateY(34px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  .reveal.d1 { transition-delay: .12s; }
+  .reveal.d2 { transition-delay: .24s; }
+
+  /* ─── exhibit 2 ─── */
+  .sim-grid { display: grid; grid-template-columns: 1fr 240px; gap: 0; }
+  @media (max-width: 760px) { .sim-grid { grid-template-columns: 1fr; } }
+  #simCanvas { width: 100%; height: 380px; display: block; background: #08090b; }
+  .controls {
+    border-left: 1px solid var(--line);
+    padding: 24px 22px;
+    display: flex; flex-direction: column; gap: 18px;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
+  }
+  @media (max-width: 760px) { .controls { border-left: 0; border-top: 1px solid var(--line); } }
+  .ctl label { display: flex; justify-content: space-between; margin-bottom: 7px; }
+  .ctl output { font-family: var(--mono); color: var(--amber); font-size: 11.5px; letter-spacing: 0; }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 2px;
+    background: rgba(233,230,223,0.18); border-radius: 2px; outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--amber); cursor: pointer;
+    box-shadow: 0 0 10px rgba(232,177,88,0.5);
+  }
+  .toggle-row { display: flex; align-items: flex-start; gap: 9px; text-transform: none; letter-spacing: 0.02em; font-size: 12px; color: var(--dim); }
+  .toggle-row input { accent-color: var(--amber); margin-top: 3px; }
+  .verdict {
+    border-top: 1px solid var(--line); padding-top: 14px;
+    font-size: 12.5px; line-height: 1.6; color: var(--dim);
+    text-transform: none; letter-spacing: 0.02em;
+  }
+  .verdict .v-state { text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; font-size: 11px; }
+  .calib {
+    margin-top: 20px; font-size: 12.5px; color: #86b89a; letter-spacing: 0.04em;
+  }
+  .calib::before { content: "● "; font-size: 9px; vertical-align: 2px; }
+
+  /* ─── exhibit 3 ─── */
+  .logbook {
+    font-family: var(--mono); font-size: 13px; line-height: 1.85;
+    padding: 26px 30px; min-height: 260px;
+  }
+  .logbook .row { display: none; padding: 4px 0; color: var(--dim); }
+  .logbook .row.shown { display: block; animation: fadein .5s var(--ease); }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+  .t-date { color: var(--faint); margin-right: 12px; }
+  .tag { font-size: 10.5px; letter-spacing: 0.1em; margin-right: 12px; }
+  .tag.auto { color: var(--amber); }
+  .tag.human { color: var(--cyan); }
+  .tag.obs { color: var(--violet); }
+  .play-btn {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--amber); background: none;
+    border: 1px solid rgba(232,177,88,0.4); border-radius: 30px;
+    padding: 10px 26px; cursor: pointer; margin-bottom: 30px;
+    transition: all .35s var(--ease);
+  }
+  .play-btn:hover { background: rgba(232,177,88,0.12); box-shadow: 0 0 24px rgba(232,177,88,0.18); }
+
+  /* ─── index (papers/projects) ─── */
+  .index-list { border-top: 1px solid var(--line); }
+  .irow {
+    display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: baseline;
+    padding: 20px 4px; border-bottom: 1px solid var(--line);
+  }
+  .irow .t a { font-family: var(--serif); font-size: 19px; font-weight: 400; border: 0; }
+  .irow .t a:hover { color: var(--amber); }
+  .irow .d { color: var(--faint); font-size: 13.5px; margin-top: 3px; max-width: 560px; }
+  .irow .m { font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; }
+
+  /* ─── close ─── */
+  .close {
+    min-height: 82vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    position: relative; padding: 0 24px;
+  }
+  .close-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 55% 40% at 50% 60%, rgba(232,177,88,0.06), transparent 65%);
+    pointer-events: none;
+  }
+  .close .say {
+    font-family: var(--serif); font-style: italic; font-weight: 300;
+    font-size: clamp(1.6rem, 3.6vw, 2.4rem); line-height: 1.4;
+    max-width: 640px; margin-bottom: 40px;
+  }
+  .close .say em { color: var(--amber); font-style: italic; }
+  .close .email {
+    font-family: var(--serif); font-size: clamp(1.2rem, 2.6vw, 1.7rem); font-weight: 400;
+    border-bottom: 1px solid rgba(232,177,88,0.4); padding-bottom: 3px;
+  }
+  .close .sub { margin-top: 26px; font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--faint); }
+  .close .sub a { color: var(--faint); border: 0; margin: 0 12px; }
+  .close .sub a:hover { color: var(--amber); }
+  footer { text-align: center; padding: 0 0 34px; font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: #3d3a35; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orb, .orb::after, .mini-orb, .scroll-hint { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+  @media (max-width: 640px) {
+    .chrome { padding: 20px 20px; }
+    .chrome .nav a { margin-left: 12px; }
+    .companion { left: 18px; bottom: 18px; }
+    iframe.viewer { height: 480px; }
+  }
 </style>
 </head>
 <body>
 
-<div class="col">
-  <h1>Nathan&nbsp;Langley</h1>
-  <p class="role">Physics, UNC Greensboro · B.S. Dec 2026 · AI Safety</p>
-  <p class="links">
+<div class="grain"></div>
+
+<div class="chrome">
+  <span class="name">Nathan Langley</span>
+  <span class="nav">
     <a href="https://github.com/ninjahawk" target="_blank">GitHub</a>
     <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a>
     <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
     <a href="mailto:nlangley1868@gmail.com">Email</a>
-  </p>
-  <p class="intro">
-    I'm a student researcher working independently at the intersection of physics and AI safety:
-    instruments for looking inside language models, autonomous multi-agent systems and their
-    failure modes, and mathematical models of recursive self-improvement.
-  </p>
-  <p class="epigraph">"Don't read about the work — poke it."
-    <small>Three working exhibits below</small>
-  </p>
+  </span>
 </div>
 
-<!-- ═══════════ EXHIBIT I ═══════════ -->
-<div class="wide exhibit">
-  <div class="col">
-    <p class="ex-num">Exhibit I · Subtext</p>
-    <h2>What a model holds before it speaks</h2>
-    <p class="ex-desc">
-      Below is my interpretability tool <b>Subtext</b>, replaying a real recorded session. It applies a
-      Jacobian activation lens at nine depths inside a small LLM and decodes the hidden states through the
-      vocabulary — amber while the model <i>reads</i>, blue while it <i>replies</i>. Watch the verdict form
-      several tokens before anything is said; hover any word for its layer trace.
-    </p>
-  </div>
-  <div class="figure bezel">
-    <iframe src="https://ninjahawk.github.io/Subtext/" loading="lazy" title="Subtext live session replay"></iframe>
-  </div>
-  <p class="caption"><span class="fig">Fig. 1</span> — the live instrument (Qwen3.5-4B, pre-fitted Neuronpedia lens weights), embedded, not a video.</p>
-  <p class="ex-links">
-    <a href="https://ninjahawk.github.io/Subtext/" target="_blank">open full-screen</a>
-    <a href="https://github.com/ninjahawk/Subtext" target="_blank">source · ★183</a>
-  </p>
-  <p class="footnote">An activation lens shows what the residual stream is <i>disposed to say</i>, not ground-truth
-  "thoughts." Decodings can be noisy, and this is a 4B model — a microscope with a known distortion, documented in the repo.</p>
+<!-- ─── HERO ─── -->
+<section class="hero" id="hero">
+  <div class="hero-glow"></div>
+  <div class="orb" aria-hidden="true"></div>
+  <div class="dialogue" id="dialogue" aria-label="Introduction"></div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- companion -->
+<div class="companion" id="companion" aria-hidden="true">
+  <div class="mini-orb"></div>
+  <div class="say" id="orbSay"></div>
 </div>
 
-<!-- ═══════════ EXHIBIT II ═══════════ -->
-<div class="wide exhibit">
-  <div class="col">
-    <p class="ex-num">Exhibit II · Singleton Attractors (preprint)</p>
-    <h2>Tune the singularity</h2>
-    <p class="ex-desc">
-      My preprint asks: if several AI agents recursively self-improve while competing for shared resources,
-      does one inevitably dominate? This is the paper's actual ODE system —
-      <span style="font-family:var(--mono); font-size:0.82rem; white-space:nowrap;">dS<sub>i</sub>/dt = S<sub>i</sub><sup>1−β(S)</sup>·S<sub>i</sub><sup>α</sup>/ΣS<sub>j</sub><sup>α</sup></span> —
-      integrated live for three agents. Drag the sliders; find the regime where the leader escapes to infinity in finite time.
+<!-- ─── EXHIBIT 01 ─── -->
+<section class="block" data-say="This one watches a model think — amber while it reads, blue while it speaks.">
+  <div class="inner">
+    <p class="kicker reveal"><span class="idx">01</span>Subtext · live interpretability</p>
+    <h2 class="reveal d1">What a model holds<br/>before it speaks</h2>
+    <p class="lede reveal d2">
+      <b>Subtext</b> applies a Jacobian activation lens at nine depths inside a small language model and
+      decodes the hidden states through the vocabulary, live. Below is a real recorded session — watch the
+      verdict form several tokens before anything is said, and hover any word for its layer trace.
     </p>
   </div>
-  <div class="figure sim-grid">
-    <canvas id="simCanvas" width="1160" height="660"></canvas>
-    <div class="controls">
-      <div class="ctl">
-        <label>α — resource acquisition <output id="aOut">0.80</output></label>
-        <input type="range" id="alpha" min="0.2" max="1.5" step="0.01" value="0.8">
+  <div class="innerwide">
+    <div class="panel reveal">
+      <iframe class="viewer" src="https://ninjahawk.github.io/Subtext/" loading="lazy" title="Subtext live session replay"></iframe>
+    </div>
+    <div class="figmeta reveal">
+      <span>Qwen3.5-4B · Neuronpedia lens weights · embedded, not a video</span>
+      <span class="links">
+        <a href="https://ninjahawk.github.io/Subtext/" target="_blank">Full screen</a>
+        <a href="https://github.com/ninjahawk/Subtext" target="_blank">Source · ★183</a>
+      </span>
+    </div>
+    <p class="footnote reveal">A lens shows what the residual stream is <b>disposed to say</b> — not ground-truth
+    "thoughts." Decodings can be noisy, and this is a 4B model: a microscope with a known distortion, documented in the repo.</p>
+  </div>
+</section>
+
+<!-- ─── EXHIBIT 02 ─── -->
+<section class="block" data-say="The mathematics of whether one of us ends up alone at the top.">
+  <div class="inner">
+    <p class="kicker reveal"><span class="idx">02</span>Singleton attractors · preprint</p>
+    <h2 class="reveal d1">Tune the singularity</h2>
+    <p class="lede reveal d2">
+      If several AI agents recursively self-improve while competing for shared resources, does one
+      inevitably dominate? This is the preprint's actual ODE system, integrated live for three agents.
+      Drag the sliders — find the regime where the leader escapes to infinity in finite time.
+    </p>
+  </div>
+  <div class="innerwide">
+    <div class="panel sim-grid reveal">
+      <canvas id="simCanvas" width="1480" height="760"></canvas>
+      <div class="controls">
+        <div class="ctl">
+          <label>α · acquisition <output id="aOut">0.80</output></label>
+          <input type="range" id="alpha" min="0.2" max="1.5" step="0.01" value="0.8">
+        </div>
+        <div class="ctl">
+          <label>β past threshold <output id="bOut">−0.20</output></label>
+          <input type="range" id="betaLow" min="-0.6" max="0.4" step="0.01" value="-0.2">
+        </div>
+        <div class="ctl">
+          <label>head start <output id="gOut">1.15×</output></label>
+          <input type="range" id="gap" min="1.0" max="1.6" step="0.01" value="1.15">
+        </div>
+        <div class="toggle-row">
+          <input type="checkbox" id="a4" checked>
+          <label for="a4">assumption A4 — a β-threshold exists</label>
+        </div>
+        <div class="verdict" id="verdict"></div>
       </div>
-      <div class="ctl">
-        <label>β after threshold <output id="bOut">−0.20</output></label>
-        <input type="range" id="betaLow" min="-0.6" max="0.4" step="0.01" value="-0.2">
+    </div>
+    <p class="calib reveal">2026 calibration: estimated β stays above zero — the real world is, so far, not in the divergent regime.</p>
+    <div class="figmeta reveal">
+      <span>dS<sub>i</sub>/dt = S<sub>i</sub><sup>1−β(S)</sup> · S<sub>i</sub><sup>α</sup> / ΣS<sub>j</sub><sup>α</sup></span>
+      <span class="links">
+        <a href="Singleton Attractor.pdf" target="_blank">Preprint (PDF)</a>
+        <a href="https://github.com/ninjahawk/singleton-attractor" target="_blank">Proofs + 11 simulations</a>
+      </span>
+    </div>
+    <p class="footnote reveal">The theorems are conditional. Calibration against Epoch AI compute and benchmark data
+    through 2026 does <b>not</b> support assumption A4 — this shows what the mathematics says would happen <b>if</b>
+    the feedback exponent ever flipped. Coalition results (critical strength α* ≈ 0.64) are in the paper.</p>
+  </div>
+</section>
+
+<!-- ─── EXHIBIT 03 ─── -->
+<section class="block" data-say="What three of my cousins did when nobody gave them instructions.">
+  <div class="inner">
+    <p class="kicker reveal"><span class="idx">03</span>hollow-agentOS · autonomy log</p>
+    <h2 class="reveal d1">Agents left alone</h2>
+    <p class="lede reveal d2">
+      <b>hollow-agentOS</b> runs three LLM agents on consumer hardware that select their own goals from
+      environmental stress signals — no instructions. Its append-only autonomy log separates what humans
+      designed from what the agents decided themselves. These entries are real.
+    </p>
+    <button class="play-btn reveal" id="playLog">Replay the log</button>
+  </div>
+  <div class="innerwide">
+    <div class="panel logbook reveal" id="ticker"></div>
+    <div class="figmeta reveal">
+      <span>Excerpts from AUTONOMY_LOG.md</span>
+      <span class="links">
+        <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">Source · ★278 · 52 releases</a>
+      </span>
+    </div>
+    <p class="footnote reveal">"Autonomous" means the agents initiated it; the interpretation of why is inferred and
+    marked as such in the log. The failures — false completions, agents overwriting each other's messages — are
+    documented as carefully as the wins. That is the point.</p>
+  </div>
+</section>
+
+<!-- ─── INDEX ─── -->
+<section class="block" data-say="The rest of what he's made, in one place.">
+  <div class="inner">
+    <p class="kicker reveal"><span class="idx">04</span>Index</p>
+    <h2 class="reveal d1">Papers &amp; projects</h2>
+  </div>
+  <div class="inner index-list reveal d2">
+    <div class="irow">
+      <div class="t">
+        <a href="Singleton Attractor.pdf" target="_blank">Singleton Attractors in Recursive Self-Improvement Dynamics</a>
+        <div class="d">Coupled-ODE model of when competition collapses into single-agent dominance — conditional theorems, honest calibration.</div>
       </div>
-      <div class="ctl">
-        <label>initial advantage <output id="gOut">1.15×</output></label>
-        <input type="range" id="gap" min="1.0" max="1.6" step="0.01" value="1.15">
+      <div class="m">preprint · 2025</div>
+    </div>
+    <div class="irow">
+      <div class="t">
+        <a href="https://github.com/ninjahawk/Subtext" target="_blank">Subtext</a>
+        <div class="d">Real-time activation-lens interface for language models.</div>
       </div>
-      <div class="toggle-row">
-        <input type="checkbox" id="a4" checked>
-        <label for="a4">assumption A4 — a β-threshold exists</label>
+      <div class="m">★ 183</div>
+    </div>
+    <div class="irow">
+      <div class="t">
+        <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a>
+        <div class="d">Self-modifying multi-agent system; five-layer gate that catches agents falsely claiming completion.</div>
       </div>
-      <div class="verdict" id="verdict"></div>
+      <div class="m">★ 278</div>
+    </div>
+    <div class="irow">
+      <div class="t">
+        <a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a>
+        <div class="d">Emergent flocking, phase transitions, predator-prey dynamics.</div>
+      </div>
+      <div class="m">sim</div>
+    </div>
+    <div class="irow">
+      <div class="t">
+        <a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a>
+        <div class="d">An 8-bit computer built from a single NAND gate up, plus a live-evolving neural net.</div>
+      </div>
+      <div class="m">★ 24</div>
+    </div>
+    <div class="irow">
+      <div class="t">
+        <a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter" target="_blank">Unit Converter</a>
+        <div class="d">Android app, published on Google Play.</div>
+      </div>
+      <div class="m">app</div>
     </div>
   </div>
-  <p class="calib">2026 calibration: estimated β stays &gt; 0 — the real world is, so far, not in the divergent regime</p>
-  <p class="ex-links">
-    <a href="Singleton Attractor.pdf" target="_blank">read the preprint (PDF)</a>
-    <a href="https://github.com/ninjahawk/singleton-attractor" target="_blank">proofs + 11 simulations</a>
+</section>
+
+<!-- ─── CLOSE ─── -->
+<section class="close" data-say="">
+  <div class="close-glow"></div>
+  <p class="say reveal">He's a physics senior who builds his own instruments.<br/>
+  <em>He graduates in December. You should talk to him.</em></p>
+  <a class="email reveal d1" href="mailto:nlangley1868@gmail.com">nlangley1868@gmail.com</a>
+  <p class="sub reveal d2">
+    <a href="https://github.com/ninjahawk" target="_blank">GitHub</a> ·
+    <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a> ·
+    <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
   </p>
-  <p class="footnote">The theorems are conditional. Calibration against Epoch AI compute and benchmark data through 2026
-  does <b>not</b> support assumption A4 — the playground shows what the mathematics says would happen <i>if</i> the
-  feedback exponent ever flipped. Coalition results (critical strength α* ≈ 0.64) are in the paper.</p>
-</div>
+</section>
 
-<!-- ═══════════ EXHIBIT III ═══════════ -->
-<div class="wide exhibit">
-  <div class="col">
-    <p class="ex-num">Exhibit III · hollow-agentOS</p>
-    <h2>Agents left alone</h2>
-    <p class="ex-desc">
-      <b>hollow-agentOS</b> runs three LLM agents on consumer hardware that pick their own goals from
-      environmental stress signals — no instructions. The project keeps an append-only autonomy log that
-      separates what humans designed from what the agents decided themselves. These entries are real:
-    </p>
-    <button class="play-btn" id="playLog">Replay the log ▸</button>
-  </div>
-  <div class="figure logbook" id="ticker"></div>
-  <p class="caption"><span class="fig">Fig. 3</span> — excerpts from <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">AUTONOMY_LOG.md</a> · ★278 · 52 releases.</p>
-  <p class="footnote">"Autonomous" means the agents initiated it; the <i>interpretation</i> of why is inferred and marked
-  as such in the log. The failures (false completions, agents overwriting each other's messages) are documented as
-  carefully as the wins — that is the point.</p>
-</div>
-
-<!-- ═══════════ PAPERS / PROJECTS / CONTACT ═══════════ -->
-<div class="col">
-  <h3 class="section">Papers</h3>
-  <div class="item">
-    <span class="name"><a href="Singleton Attractor.pdf" target="_blank">Singleton Attractors in Recursive Self-Improvement Dynamics</a></span>
-    <span class="stars">preprint · 2025</span>
-    <p>Coupled-ODE model of when competitive recursive self-improvement collapses into single-agent dominance.
-    Conditional theorems, plus empirical calibration that does not yet support the critical assumption.</p>
-  </div>
-
-  <h3 class="section">Projects</h3>
-  <div class="item">
-    <span class="name"><a href="https://github.com/ninjahawk/Subtext" target="_blank">Subtext</a></span><span class="stars">★ 183</span>
-    <p>Real-time activation-lens interface for language models — Exhibit I.</p>
-  </div>
-  <div class="item">
-    <span class="name"><a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a></span><span class="stars">★ 278</span>
-    <p>Self-modifying multi-agent system with a five-layer gate that catches agents falsely claiming task completion.</p>
-  </div>
-  <div class="item">
-    <span class="name"><a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a></span>
-    <p>Simulations of emergent flocking, phase transitions, and predator-prey dynamics.</p>
-  </div>
-  <div class="item">
-    <span class="name"><a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a></span><span class="stars">★ 24</span>
-    <p>8-bit computer built from a single NAND gate up, plus a live-evolving neural net.</p>
-  </div>
-  <div class="item">
-    <span class="name"><a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter" target="_blank">Unit Converter</a></span>
-    <p>Android app on the Google Play Store.</p>
-  </div>
-
-  <h3 class="section">Contact</h3>
-  <p style="color:var(--muted);">
-    Open to AI-safety research-engineering roles, fellowships, and collaboration.<br/>
-    <a href="mailto:nlangley1868@gmail.com">nlangley1868@gmail.com</a>
-  </p>
-
-  <footer>ninjahawk.github.io — built by hand, no framework; the exhibits run in your browser.</footer>
-</div>
+<footer>Nathan Langley · Greensboro, NC · the exhibits run in your browser</footer>
 
 <script>
-/* ───────────────── Exhibit II: the paper's ODE system ─────────────────
+/* ─────────── hero dialogue: streamed like generation ─────────── */
+(function () {
+  const host = document.getElementById('dialogue');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LINES = [
+    'Hello.',
+    'I’m the interface to Nathan Langley’s research.',
+    'He builds instruments for looking inside systems like me. <em>Let me show you.</em>',
+  ];
+  if (reduced) {
+    host.innerHTML = LINES.map(l => '<span class="line on">' + l + '</span>').join('');
+    return;
+  }
+  const caret = document.createElement('span');
+  caret.className = 'caret';
+  let li = 0;
+  function typeLine() {
+    if (li >= LINES.length) { caret.remove(); return; }
+    const span = document.createElement('span');
+    span.className = 'line on';
+    host.appendChild(span);
+    host.appendChild(caret);
+    const raw = LINES[li];
+    // tokenize into text + tags so <em> types correctly
+    let i = 0, out = '';
+    (function tick() {
+      if (i >= raw.length) {
+        li++;
+        setTimeout(typeLine, li === 1 ? 650 : 850);
+        return;
+      }
+      if (raw[i] === '<') { const j = raw.indexOf('>', i); out += raw.slice(i, j + 1); i = j + 1; }
+      else { out += raw[i]; i++; }
+      span.innerHTML = out;
+      setTimeout(tick, 26 + Math.random() * 26);
+    })();
+  }
+  setTimeout(typeLine, 700);
+})();
+
+/* ─────────── companion + scroll choreography ─────────── */
+(function () {
+  const companion = document.getElementById('companion');
+  const say = document.getElementById('orbSay');
+  const hero = document.getElementById('hero');
+  let current = '';
+
+  const sections = document.querySelectorAll('section.block, section.close');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const line = en.target.getAttribute('data-say') || '';
+      if (line !== current) {
+        current = line;
+        say.style.opacity = 0;
+        setTimeout(() => { say.textContent = line; say.style.opacity = 1; }, 320);
+      }
+      if (en.target.classList.contains('close')) companion.classList.remove('on');
+    });
+  }, { rootMargin: '-42% 0px -42% 0px' });
+  sections.forEach(s => io.observe(s));
+
+  const heroIo = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) companion.classList.remove('on');
+      else if (current) companion.classList.add('on');
+    });
+  }, { threshold: 0.12 });
+  heroIo.observe(hero);
+
+  const reveals = document.querySelectorAll('.reveal');
+  const rio = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); rio.unobserve(en.target); } });
+  }, { rootMargin: '0px 0px -10% 0px' });
+  reveals.forEach(r => rio.observe(r));
+})();
+
+/* ─────────── Exhibit 02: the paper's ODE system ───────────
    dS_i/dt = S_i^(1-beta(S_i)) * S_i^alpha / sum_j S_j^alpha
-   beta(S) = bHigh + (bLow - bHigh) / (1 + exp(-k (S - T)))   [A4 on]
-   Constants mirror simulations/competition.py in the repo.            */
+   beta(S) = bHigh + (bLow - bHigh)/(1 + exp(-k (S - T)))  [A4 on]
+   Constants mirror simulations/competition.py in the repo. */
 (function () {
   const canvas = document.getElementById('simCanvas');
   const ctx = canvas.getContext('2d');
@@ -333,7 +599,7 @@
     verdict: document.getElementById('verdict'),
   };
   const B_HIGH = 0.3, K = 5.0, T_THRESH = 60.0, S_CAP = 1e8, T_MAX = 30.0, DT = 0.001;
-  const COLORS = ['#a84e28', '#23678c', '#6d5f9e'];
+  const COLORS = ['#e8b158', '#7ec3e8', '#a99be0'];
 
   function beta(S, bLow, a4on) {
     if (!a4on) return B_HIGH;
@@ -370,39 +636,44 @@
   }
   function draw(res) {
     const W = canvas.width, H = canvas.height;
-    const padL = 74, padR = 20, padT = 30, padB = 50;
+    const padL = 86, padR = 30, padT = 44, padB = 62;
     ctx.clearRect(0, 0, W, H);
     const yMin = -1, yMax = 8.3;
     const tEnd = Math.max(res.tEnd, 1e-6);
     const x = t => padL + (t / tEnd) * (W - padL - padR);
     const y = v => padT + (yMax - v) * (H - padT - padB) / (yMax - yMin);
-    ctx.font = '20px ui-monospace, monospace';
-    ctx.strokeStyle = '#e7e1d2'; ctx.fillStyle = '#a39c8c'; ctx.lineWidth = 1;
+    ctx.font = '19px ui-monospace, monospace';
+    ctx.strokeStyle = 'rgba(233,230,223,0.07)'; ctx.fillStyle = 'rgba(233,230,223,0.30)'; ctx.lineWidth = 1;
     for (let e = 0; e <= 8; e += 2) {
       ctx.beginPath(); ctx.moveTo(padL, y(e)); ctx.lineTo(W - padR, y(e)); ctx.stroke();
-      ctx.fillText('1e' + e, 12, y(e) + 7);
+      ctx.fillText('1e' + e, 18, y(e) + 6);
     }
     const yT = y(Math.log10(T_THRESH));
-    ctx.strokeStyle = '#d9c08c'; ctx.setLineDash([8, 6]);
+    ctx.strokeStyle = 'rgba(232,177,88,0.30)'; ctx.setLineDash([7, 7]);
     ctx.beginPath(); ctx.moveTo(padL, yT); ctx.lineTo(W - padR, yT); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = '#96712a'; ctx.fillText('β-threshold T', W - 210, yT - 10);
+    ctx.fillStyle = 'rgba(232,177,88,0.55)'; ctx.fillText('β-threshold', W - 170, yT - 10);
     for (let a = 0; a < 3; a++) {
-      ctx.strokeStyle = COLORS[a]; ctx.lineWidth = 4; ctx.beginPath();
+      ctx.strokeStyle = COLORS[a]; ctx.lineWidth = 3.4;
+      ctx.shadowColor = COLORS[a]; ctx.shadowBlur = 14;
+      ctx.beginPath();
       for (let i = 0; i < res.times.length; i++) {
         const v = Math.log10(Math.max(res.traj[i][a], 0.1));
         const px = x(res.times[i]), py = y(Math.min(v, yMax));
         i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
       }
       ctx.stroke();
+      ctx.shadowBlur = 0;
     }
-    ctx.fillStyle = '#a39c8c';
-    ctx.fillText('capability S (log)', 12, 20);
-    ctx.fillText('time →  (t = ' + res.tEnd.toFixed(1) + ')', W - 260, 20);
-    const names = ['agent A (head start)', 'agent B', 'agent C'];
+    ctx.fillStyle = 'rgba(233,230,223,0.30)';
+    ctx.fillText('capability S (log)', 18, 26);
+    ctx.fillText('t = ' + res.tEnd.toFixed(1), W - 130, 26);
+    const names = ['A · head start', 'B', 'C'];
+    let lx = padL;
     names.forEach((n, i) => {
       ctx.fillStyle = COLORS[i];
-      ctx.fillText('■ ' + n, padL + 10 + i * 330, H - 14);
+      ctx.fillText('— ' + n, lx, H - 20);
+      lx += ctx.measureText('— ' + n).width + 60;
     });
   }
   function verdict(res) {
@@ -410,13 +681,13 @@
     const ratio = last[0] / Math.max(last[1], 1e-12);
     let html;
     if (res.capped && ratio > 1e3) {
-      html = '<span class="v-state" style="color:#a33b2e">singleton</span> — agent A hit the 10⁸ cap at t = '
-        + res.tEnd.toFixed(1) + ' with a ' + ratio.toExponential(1) + '× lead. Finite-time divergence (Thm 3.4 regime).';
+      html = '<span class="v-state" style="color:#e8b158">Singleton</span><br/>Agent A hit the 10⁸ cap at t = '
+        + res.tEnd.toFixed(1) + ' with a ' + ratio.toExponential(1) + '× lead — finite-time divergence.';
     } else if (ratio > 50) {
-      html = '<span class="v-state" style="color:#96712a">winner-take-most</span> — exclusion without the superexponential flip. Ratio A/B = ' + ratio.toExponential(1) + '.';
+      html = '<span class="v-state" style="color:#c9a35c">Winner-take-most</span><br/>Exclusion without the superexponential flip. A/B = ' + ratio.toExponential(1) + '.';
     } else {
-      html = '<span class="v-state" style="color:#3d7a55">coexistence, so far</span> — ratio A/B = '
-        + ratio.toFixed(2) + ' at t = ' + res.tEnd.toFixed(1) + '. This is the regime the 2026 calibration supports.';
+      html = '<span class="v-state" style="color:#86b89a">Coexistence, so far</span><br/>A/B = '
+        + ratio.toFixed(2) + ' at t = ' + res.tEnd.toFixed(1) + '. The regime today’s calibration supports.';
     }
     els.verdict.innerHTML = html;
   }
@@ -437,7 +708,7 @@
   run();
 })();
 
-/* ───────────────── Exhibit III: real autonomy-log replay ───────────────── */
+/* ─────────── Exhibit 03: real autonomy-log replay ─────────── */
 (function () {
   const ENTRIES = [
     ['2026-04-03', 'obs', 'observed', 'Agents were completing goals by step count alone — no real artifact produced. False completions blocked all meaningful validation.'],
@@ -462,11 +733,11 @@
     rows.forEach(r => r.classList.remove('shown'));
     clearInterval(timer);
     let i = 0;
-    btn.textContent = 'replaying…';
+    btn.textContent = 'Replaying…';
     timer = setInterval(() => {
       rows[i].classList.add('shown');
       i++;
-      if (i >= rows.length) { clearInterval(timer); btn.textContent = 'Replay the log ↺'; }
+      if (i >= rows.length) { clearInterval(timer); btn.textContent = 'Replay the log'; }
     }, 1100);
   });
   ticker.querySelectorAll('.row').forEach((r, i) => { if (i < 2) r.classList.add('shown'); });
