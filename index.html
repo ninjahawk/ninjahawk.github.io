@@ -1,221 +1,404 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nathan Langley</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nathan Langley — AI safety research, live</title>
+<meta name="description" content="Physics senior doing independent AI-safety research. Don't read about the work — poke it: live LLM interpretability replays, an interactive recursive self-improvement model, and real logs of autonomous agents." />
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #10161e;
+    --panel-edge: #1e2833;
+    --text: #d7dde6;
+    --dim: #8b96a5;
+    --faint: #5a6572;
+    --amber: #f5b83d;
+    --cyan: #4dc3ff;
+    --violet: #9d8cff;
+    --green: #5dd39e;
+    --red: #ff6b6b;
+    --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    line-height: 1.6;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+  a { color: var(--cyan); text-decoration: none; }
+  a:hover { text-decoration: underline; }
 
-    body {
-      font-family: Georgia, serif;
-      background: #fafafa;
-      color: #222;
-      max-width: 700px;
-      margin: 60px auto;
-      padding: 0 24px 80px;
-      line-height: 1.7;
-    }
+  /* header */
+  h1 { font-size: 2rem; letter-spacing: 0.01em; }
+  .subtitle { font-family: var(--mono); font-size: 0.85rem; color: var(--dim); margin: 4px 0 14px; }
+  .links { display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 0.9rem; margin-bottom: 22px; }
+  .links a { border-bottom: 1px solid #2a4a66; padding-bottom: 1px; }
+  .intro { color: var(--dim); max-width: 700px; margin-bottom: 8px; }
+  .hook { font-family: var(--mono); color: var(--amber); font-size: 0.95rem; margin: 14px 0 40px; }
 
-    h1 {
-      font-size: 2rem;
-      letter-spacing: 0.02em;
-      margin-bottom: 4px;
-    }
+  /* exhibits */
+  .exhibit { background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 10px; padding: 22px 22px 18px; margin-bottom: 34px; }
+  .ex-label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--faint); text-transform: uppercase; }
+  .exhibit h2 { font-size: 1.25rem; margin: 4px 0 8px; }
+  .ex-desc { color: var(--dim); font-size: 0.95rem; margin-bottom: 14px; max-width: 720px; }
+  .caveat { font-size: 0.82rem; color: var(--faint); margin-top: 12px; max-width: 720px; }
+  .caveat b { color: var(--dim); font-weight: 600; }
+  .ex-links { font-family: var(--mono); font-size: 0.82rem; margin-top: 10px; display: flex; gap: 18px; flex-wrap: wrap; }
 
-    .subtitle {
-      font-size: 0.9rem;
-      font-family: monospace;
-      color: #888;
-      margin-bottom: 16px;
-    }
+  /* exhibit 1: subtext */
+  .frame-wrap { position: relative; border: 1px solid var(--panel-edge); border-radius: 8px; overflow: hidden; background: #000; }
+  .frame-wrap iframe { width: 100%; height: 560px; border: 0; display: block; }
 
-    .links {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
+  /* exhibit 2: simulator */
+  .sim-grid { display: grid; grid-template-columns: 1fr 250px; gap: 18px; }
+  @media (max-width: 700px) { .sim-grid { grid-template-columns: 1fr; } }
+  #simCanvas { width: 100%; height: 320px; background: #0d1219; border: 1px solid var(--panel-edge); border-radius: 8px; }
+  .controls { font-family: var(--mono); font-size: 0.8rem; color: var(--dim); display: flex; flex-direction: column; gap: 12px; }
+  .ctl label { display: flex; justify-content: space-between; margin-bottom: 3px; }
+  .ctl output { color: var(--text); }
+  input[type="range"] { width: 100%; accent-color: var(--amber); }
+  .toggle-row { display: flex; align-items: center; gap: 8px; }
+  .toggle-row input { accent-color: var(--amber); }
+  .verdict { border: 1px solid var(--panel-edge); border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; line-height: 1.5; }
+  .verdict .v-state { font-weight: 700; }
+  .pill { display: inline-block; font-family: var(--mono); font-size: 0.72rem; color: var(--green); border: 1px solid #244436; background: #12211b; border-radius: 20px; padding: 2px 10px; margin-top: 10px; }
 
-    .bio {
-      font-size: 1rem;
-      color: #444;
-      margin-bottom: 48px;
-      max-width: 620px;
-    }
+  /* exhibit 3: hollow log */
+  .ticker { font-family: var(--mono); font-size: 0.82rem; border: 1px solid var(--panel-edge); border-radius: 8px; background: #0d1219; padding: 14px 16px; min-height: 230px; }
+  .ticker .row { display: none; padding: 5px 0; border-bottom: 1px dashed #1a232e; }
+  .ticker .row.shown { display: block; animation: fadein 0.5s; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+  .tag { display: inline-block; font-size: 0.68rem; border-radius: 3px; padding: 0 6px; margin-right: 8px; vertical-align: 1px; }
+  .tag.auto { background: #2a2140; color: var(--violet); }
+  .tag.human { background: #10222e; color: var(--cyan); }
+  .tag.obs { background: #2e2410; color: var(--amber); }
+  .t-date { color: var(--faint); margin-right: 8px; }
+  .play-btn { font-family: var(--mono); font-size: 0.8rem; color: var(--bg); background: var(--amber); border: 0; border-radius: 6px; padding: 6px 16px; cursor: pointer; margin-bottom: 12px; }
+  .play-btn:hover { filter: brightness(1.1); }
 
-    .links a {
-      color: #2a6496;
-      text-decoration: none;
-      font-family: monospace;
-      font-size: 0.95rem;
-      border-bottom: 1px solid #aac4df;
-      padding-bottom: 1px;
-    }
-
-    .links a:hover { color: #1a3f60; border-color: #1a3f60; }
-
-    h2 {
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #888;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 6px;
-    }
-
-    section { margin-bottom: 48px; }
-
-    .project { margin-bottom: 22px; }
-
-    .project a {
-      font-size: 1rem;
-      font-weight: bold;
-      color: #2a6496;
-      text-decoration: none;
-    }
-
-    .project a:hover { text-decoration: underline; }
-
-    .project .tag {
-      font-size: 0.75rem;
-      font-family: monospace;
-      background: #e8f0f7;
-      color: #2a6496;
-      border-radius: 3px;
-      padding: 1px 6px;
-      margin-left: 8px;
-      vertical-align: middle;
-    }
-
-    .project .stars {
-      font-size: 0.78rem;
-      font-family: monospace;
-      color: #999;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
-
-    .project p {
-      font-size: 0.92rem;
-      color: #555;
-      margin-top: 3px;
-    }
-
-    .contact p {
-      font-size: 0.95rem;
-      color: #444;
-    }
-
-    .contact a {
-      color: #2a6496;
-      text-decoration: none;
-    }
-
-    .contact a:hover { text-decoration: underline; }
-
-    footer {
-      font-size: 0.8rem;
-      color: #bbb;
-      margin-top: 60px;
-      font-family: monospace;
-    }
-  </style>
+  /* lower sections */
+  h3.section { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); border-bottom: 1px solid var(--panel-edge); padding-bottom: 6px; margin: 44px 0 16px; }
+  .item { margin-bottom: 14px; }
+  .item .name { font-weight: 600; }
+  .item .stars { font-family: var(--mono); font-size: 0.75rem; color: var(--faint); margin-left: 8px; }
+  .item p { color: var(--dim); font-size: 0.9rem; }
+  footer { margin-top: 60px; font-family: var(--mono); font-size: 0.75rem; color: var(--faint); }
+</style>
 </head>
 <body>
 
-  <h1>Nathan Langley</h1>
-  <p class="subtitle">B.S. Physics, University of North Carolina at Greensboro, expected December 2026</p>
+<h1>Nathan Langley</h1>
+<p class="subtitle">B.S. Physics, UNC Greensboro, expected Dec 2026 · AI safety</p>
+<div class="links">
+  <a href="https://github.com/ninjahawk" target="_blank">GitHub</a>
+  <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a>
+  <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
+  <a href="mailto:nlangley1868@gmail.com">Email</a>
+</div>
+<p class="intro">
+  I'm a student researcher working independently at the intersection of physics and AI safety:
+  tools for looking inside language models, autonomous multi-agent systems and their failure modes,
+  and mathematical models of recursive self-improvement.
+</p>
+<p class="hook">// don't read about the work — poke it. three live exhibits below.</p>
 
-  <div class="links">
-    <a href="https://github.com/ninjahawk" target="_blank">GitHub</a>
-    <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a>
-    <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
-    <!-- Add arXiv link when available:
-    <a href="YOUR_ARXIV_URL" target="_blank">arXiv</a>
-    -->
-  </div>
-
-  <p class="bio">
-    I'm a student researcher working independently at the intersection of physics and AI safety.
-    I build open-source tools for looking inside language models and for studying autonomous
-    multi-agent systems, and I work on mathematical models of recursive self-improvement and
-    emergent behavior. I'm interested in collaborating with researchers and open to
-    research-engineering opportunities in AI safety.
+<!-- ═══════════ EXHIBIT 1 ═══════════ -->
+<div class="exhibit">
+  <div class="ex-label">Exhibit 01 · Subtext</div>
+  <h2>What a model holds before it speaks</h2>
+  <p class="ex-desc">
+    This is my interpretability tool <b>Subtext</b>, running a real recorded session. It applies a Jacobian
+    activation lens at nine depths inside a small LLM (Qwen3.5-4B) and decodes the hidden states through the
+    vocabulary — amber while the model <i>reads</i>, blue while it <i>replies</i>. Watch the verdict form
+    several tokens before anything is said. Hover any word for its layer trace.
   </p>
+  <div class="frame-wrap">
+    <iframe src="https://ninjahawk.github.io/Subtext/" loading="lazy" title="Subtext live session replay"></iframe>
+  </div>
+  <div class="ex-links">
+    <a href="https://ninjahawk.github.io/Subtext/" target="_blank">open full-screen ↗</a>
+    <a href="https://github.com/ninjahawk/Subtext" target="_blank">source · ★183</a>
+  </div>
+  <p class="caveat"><b>Honest caveat:</b> an activation lens shows what the residual stream is <i>disposed to say</i>,
+  not ground-truth "thoughts." Decodings can be noisy, and this is a 4B model — treat it as a microscope with a
+  known distortion, documented in the repo.</p>
+</div>
 
-  <section>
-    <h2>Research</h2>
-
-    <div class="project">
-      <a href="Singleton Attractor.pdf" target="_blank">Singleton Attractors</a>
-      <span class="tag">preprint</span>
-      <p>When does competitive recursive self-improvement collapse into single-agent dominance? A coupled-ODE model with conditional theorems, calibrated against frontier AI data &mdash; which does not yet support the critical divergence assumption.</p>
+<!-- ═══════════ EXHIBIT 2 ═══════════ -->
+<div class="exhibit">
+  <div class="ex-label">Exhibit 02 · Singleton Attractors (preprint)</div>
+  <h2>Tune the singularity</h2>
+  <p class="ex-desc">
+    My preprint asks: if several AI agents recursively self-improve while competing for shared resources,
+    does one inevitably dominate? This is the paper's actual ODE system —
+    <span style="font-family:var(--mono); font-size:0.85rem;">dS<sub>i</sub>/dt&nbsp;=&nbsp;S<sub>i</sub><sup>1−β(S<sub>i</sub>)</sup>&nbsp;·&nbsp;S<sub>i</sub><sup>α</sup>/ΣS<sub>j</sub><sup>α</sup></span> —
+    integrated live for three agents. Drag the sliders. Find the regime where the leader escapes to infinity in finite time.
+  </p>
+  <div class="sim-grid">
+    <canvas id="simCanvas" width="1160" height="640"></canvas>
+    <div class="controls">
+      <div class="ctl">
+        <label>α · resource acquisition <output id="aOut">0.80</output></label>
+        <input type="range" id="alpha" min="0.2" max="1.5" step="0.01" value="0.8">
+      </div>
+      <div class="ctl">
+        <label>β after threshold <output id="bOut">−0.20</output></label>
+        <input type="range" id="betaLow" min="-0.6" max="0.4" step="0.01" value="-0.2">
+      </div>
+      <div class="ctl">
+        <label>initial advantage <output id="gOut">1.15×</output></label>
+        <input type="range" id="gap" min="1.0" max="1.6" step="0.01" value="1.15">
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="a4" checked>
+        <label for="a4">assumption A4 (β-threshold exists)</label>
+      </div>
+      <div class="verdict" id="verdict"></div>
     </div>
+  </div>
+  <span class="pill" id="calibPill">● 2026 calibration: estimated β stays &gt; 0 — the real world is (so far) not in the divergent regime</span>
+  <div class="ex-links">
+    <a href="Singleton Attractor.pdf" target="_blank">read the preprint (PDF) ↗</a>
+    <a href="https://github.com/ninjahawk/singleton-attractor" target="_blank">proofs + 11 simulations · repo</a>
+  </div>
+  <p class="caveat"><b>Honest caveat:</b> the theorems are conditional. Calibration against Epoch AI compute and
+  benchmark data through 2026 does <b>not</b> support assumption A4 — this playground shows what the math says
+  would happen <i>if</i> the feedback exponent ever flipped. Coalition results (critical strength α*&nbsp;≈&nbsp;0.64) are in the paper.</p>
+</div>
 
-    <div class="project">
-      <a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a>
-      <span class="tag">repo</span>
-      <p>Computational simulations of emergent flocking, phase transitions, and predator-prey dynamics.</p>
-    </div>
+<!-- ═══════════ EXHIBIT 3 ═══════════ -->
+<div class="exhibit">
+  <div class="ex-label">Exhibit 03 · hollow-agentOS</div>
+  <h2>Agents left alone</h2>
+  <p class="ex-desc">
+    <b>hollow-agentOS</b> runs three LLM agents on consumer hardware that pick their own goals from environmental
+    stress signals — no instructions. The project keeps an append-only <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">autonomy log</a>
+    separating what humans designed from what the agents decided themselves. These entries are real:
+  </p>
+  <button class="play-btn" id="playLog">▶ replay the log</button>
+  <div class="ticker" id="ticker"></div>
+  <div class="ex-links">
+    <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">source · ★278 · 52 releases</a>
+  </div>
+  <p class="caveat"><b>Honest caveat:</b> "autonomous" means the agents initiated it; the <i>interpretation</i> of why
+  is inferred and marked as such in the log. The interesting failures (false completions, agents overwriting each
+  other's messages) are documented as carefully as the wins — that's the point.</p>
+</div>
 
-  </section>
+<!-- ═══════════ PAPERS / PROJECTS / CONTACT ═══════════ -->
+<h3 class="section">Papers</h3>
+<div class="item">
+  <span class="name"><a href="Singleton Attractor.pdf" target="_blank">Singleton Attractors in Recursive Self-Improvement Dynamics</a></span>
+  <span class="stars">preprint · 2025</span>
+  <p>Coupled-ODE model of when competitive recursive self-improvement collapses into single-agent dominance.
+  Conditional theorems + empirical calibration that does not yet support the critical assumption.</p>
+</div>
 
-  <section>
-    <h2>Projects</h2>
+<h3 class="section">Projects</h3>
+<div class="item">
+  <span class="name"><a href="https://github.com/ninjahawk/Subtext" target="_blank">Subtext</a></span><span class="stars">★ 183</span>
+  <p>Real-time activation-lens interface for language models — see exhibit 01.</p>
+</div>
+<div class="item">
+  <span class="name"><a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a></span><span class="stars">★ 278</span>
+  <p>Self-modifying multi-agent system with a five-layer gate that catches agents falsely claiming task completion.</p>
+</div>
+<div class="item">
+  <span class="name"><a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a></span>
+  <p>Simulations of emergent flocking, phase transitions, and predator-prey dynamics.</p>
+</div>
+<div class="item">
+  <span class="name"><a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a></span><span class="stars">★ 24</span>
+  <p>8-bit computer built from a single NAND gate up, plus a live-evolving neural net.</p>
+</div>
+<div class="item">
+  <span class="name"><a href="https://github.com/ninjahawk/KillClawd" target="_blank">KillClawd</a></span><span class="stars">★ 17</span>
+  <p>A desktop pet crab powered by a local LLM, with opinions about your file organization.</p>
+</div>
+<div class="item">
+  <span class="name"><a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter" target="_blank">Unit Converter</a></span>
+  <p>Android app on the Google Play Store.</p>
+</div>
 
-    <div class="project">
-      <a href="https://github.com/ninjahawk/Subtext" target="_blank">Subtext</a>
-      <span class="tag">repo</span>
-      <span class="stars">★ 183</span>
-      <p>A real-time view into what a language model is disposed to say before it says it — a Jacobian activation lens applied live at nine depths during chat, with per-token inspection and session replay.</p>
-    </div>
+<h3 class="section">Contact</h3>
+<p style="color:var(--dim); font-size:0.95rem;">
+  Open to AI-safety research-engineering roles, fellowships, and collaboration.<br/>
+  <a href="mailto:nlangley1868@gmail.com">nlangley1868@gmail.com</a>
+</p>
 
-    <div class="project">
-      <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a>
-      <span class="tag">repo</span>
-      <span class="stars">★ 278</span>
-      <p>Open-source self-modifying agentic system built for consumer hardware.</p>
-    </div>
+<footer>ninjahawk.github.io · built by hand, no framework · exhibits run in your browser</footer>
 
-    <div class="project">
-      <a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a>
-      <span class="tag">repo</span>
-      <span class="stars">★ 24</span>
-      <p>An 8-bit computer built from a single NAND gate, with a live-evolving neural net and virtual CPU.</p>
-    </div>
+<script>
+/* ───────────────── Exhibit 2: the paper's ODE system ─────────────────
+   dS_i/dt = S_i^(1-beta(S_i)) * S_i^alpha / sum_j S_j^alpha
+   beta(S) = bHigh + (bLow - bHigh) / (1 + exp(-k (S - T)))   [A4 on]
+   Constants mirror simulations/competition.py in the repo.            */
+(function () {
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  const els = {
+    alpha: document.getElementById('alpha'),
+    betaLow: document.getElementById('betaLow'),
+    gap: document.getElementById('gap'),
+    a4: document.getElementById('a4'),
+    aOut: document.getElementById('aOut'),
+    bOut: document.getElementById('bOut'),
+    gOut: document.getElementById('gOut'),
+    verdict: document.getElementById('verdict'),
+  };
+  const B_HIGH = 0.3, K = 5.0, T_THRESH = 60.0, S_CAP = 1e8, T_MAX = 30.0, DT = 0.001;
+  const COLORS = ['#f5b83d', '#4dc3ff', '#9d8cff'];
 
-    <div class="project">
-      <a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter" target="_blank">Unit Converter</a>
-      <span class="tag">android</span>
-      <p>A unit conversion app published on the Google Play Store.</p>
-    </div>
+  function beta(S, bLow, a4on) {
+    if (!a4on) return B_HIGH;
+    return B_HIGH + (bLow - B_HIGH) / (1 + Math.exp(-K * (S - T_THRESH)));
+  }
+  function deriv(S, alpha, bLow, a4on) {
+    let denom = 0;
+    for (const s of S) denom += Math.pow(s, alpha);
+    return S.map(s => {
+      if (s <= 0) return 0;
+      const b = beta(s, bLow, a4on);
+      return Math.pow(s, 1 - b) * (Math.pow(s, alpha) / denom);
+    });
+  }
+  function simulate(alpha, bLow, gapMul, a4on) {
+    let S = [1.0 * gapMul, 1.0, 0.9];
+    const traj = [S.slice()], times = [0];
+    let t = 0, capped = false;
+    const stride = 25; // record every 25 steps
+    for (let i = 0; t < T_MAX; i++) {
+      // RK4 step
+      const k1 = deriv(S, alpha, bLow, a4on);
+      const s2 = S.map((s, j) => s + 0.5 * DT * k1[j]);
+      const k2 = deriv(s2, alpha, bLow, a4on);
+      const s3 = S.map((s, j) => s + 0.5 * DT * k2[j]);
+      const k3 = deriv(s3, alpha, bLow, a4on);
+      const s4 = S.map((s, j) => s + DT * k3[j]);
+      const k4 = deriv(s4, alpha, bLow, a4on);
+      S = S.map((s, j) => s + (DT / 6) * (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j]));
+      t += DT;
+      if (i % stride === 0) { traj.push(S.slice()); times.push(t); }
+      if (Math.max(...S) >= S_CAP) { traj.push(S.slice()); times.push(t); capped = true; break; }
+    }
+    return { traj, times, capped, tEnd: t };
+  }
+  function draw(res) {
+    const W = canvas.width, H = canvas.height;
+    const padL = 70, padR = 20, padT = 20, padB = 46;
+    ctx.clearRect(0, 0, W, H);
+    const yMin = -1, yMax = 8.3; // log10 scale
+    const tEnd = Math.max(res.tEnd, 1e-6);
+    const x = t => padL + (t / tEnd) * (W - padL - padR);
+    const y = v => padT + (yMax - v) * (H - padT - padB) / (yMax - yMin);
+    // grid + labels
+    ctx.font = '20px ui-monospace, monospace';
+    ctx.strokeStyle = '#1a232e'; ctx.fillStyle = '#5a6572'; ctx.lineWidth = 1;
+    for (let e = 0; e <= 8; e += 2) {
+      ctx.beginPath(); ctx.moveTo(padL, y(e)); ctx.lineTo(W - padR, y(e)); ctx.stroke();
+      ctx.fillText('1e' + e, 10, y(e) + 7);
+    }
+    // threshold line
+    const yT = y(Math.log10(T_THRESH));
+    ctx.strokeStyle = '#3a2f14'; ctx.setLineDash([8, 6]);
+    ctx.beginPath(); ctx.moveTo(padL, yT); ctx.lineTo(W - padR, yT); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#8a6d24'; ctx.fillText('β-threshold T', W - 220, yT - 8);
+    // trajectories
+    for (let a = 0; a < 3; a++) {
+      ctx.strokeStyle = COLORS[a]; ctx.lineWidth = 3.5; ctx.beginPath();
+      for (let i = 0; i < res.times.length; i++) {
+        const v = Math.log10(Math.max(res.traj[i][a], 0.1));
+        const px = x(res.times[i]), py = y(Math.min(v, yMax));
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+    // axes labels
+    ctx.fillStyle = '#5a6572';
+    ctx.fillText('capability S (log)', 10, 16);
+    ctx.fillText('time →  (t = ' + res.tEnd.toFixed(1) + ')', W - 250, 16);
+    // legend
+    const names = ['agent A (head start)', 'agent B', 'agent C'];
+    names.forEach((n, i) => {
+      ctx.fillStyle = COLORS[i];
+      ctx.fillText('■ ' + n, padL + 10 + i * 330, H - 12);
+    });
+  }
+  function verdict(res) {
+    const last = res.traj[res.traj.length - 1];
+    const ratio = last[0] / Math.max(last[1], 1e-12);
+    let html;
+    if (res.capped && ratio > 1e3) {
+      html = '<span class="v-state" style="color:var(--red)">singleton</span> — agent A hit the 10⁸ cap at t = '
+        + res.tEnd.toFixed(1) + ' with a ' + ratio.toExponential(1) + '× lead. Finite-time divergence (Thm 3.4 regime).';
+    } else if (ratio > 50) {
+      html = '<span class="v-state" style="color:var(--amber)">winner-take-most</span> — exclusion without the superexponential flip. Ratio A/B = ' + ratio.toExponential(1) + '.';
+    } else {
+      html = '<span class="v-state" style="color:var(--green)">coexistence (so far)</span> — ratio A/B = '
+        + ratio.toFixed(2) + ' at t = ' + res.tEnd.toFixed(1) + '. This is the regime the 2026 calibration supports.';
+    }
+    els.verdict.innerHTML = html;
+  }
+  function run() {
+    const alpha = +els.alpha.value, bLow = +els.betaLow.value, gap = +els.gap.value, a4 = els.a4.checked;
+    els.aOut.textContent = alpha.toFixed(2);
+    els.bOut.textContent = (bLow < 0 ? '−' : '') + Math.abs(bLow).toFixed(2);
+    els.gOut.textContent = gap.toFixed(2) + '×';
+    const res = simulate(alpha, bLow, gap, a4);
+    draw(res); verdict(res);
+  }
+  ['input', 'change'].forEach(ev => {
+    els.alpha.addEventListener(ev, run);
+    els.betaLow.addEventListener(ev, run);
+    els.gap.addEventListener(ev, run);
+    els.a4.addEventListener(ev, run);
+  });
+  run();
+})();
 
-    <div class="project">
-      <a href="https://github.com/ninjahawk/ModSync" target="_blank">ModSync</a>
-      <span class="tag">repo</span>
-      <p>Real-time mod queue coordination for Reddit communities — stop working on the same post twice.</p>
-    </div>
-
-    <div class="project">
-      <a href="https://github.com/ninjahawk/KillClawd" target="_blank">KillClawd</a>
-      <span class="tag">repo</span>
-      <span class="stars">★ 17</span>
-      <p>A desktop pet powered by a local LLM — a tiny AI crab who wanders your screen, reacts to your cursor, and has opinions about your file organization.</p>
-    </div>
-
-  </section>
-
-  <section class="contact">
-    <h2>Contact</h2>
-    <p>
-      Open to collaboration and opportunities.<br />
-      <a href="mailto:nlangley1868@gmail.com">nlangley1868@gmail.com</a>
-    </p>
-  </section>
-
-  <footer>ninjahawk.github.io</footer>
+/* ───────────────── Exhibit 3: real autonomy-log replay ───────────────── */
+(function () {
+  const ENTRIES = [
+    ['2026-04-03', 'obs', 'observed', 'Agents were completing goals by step count alone — no real artifact produced. False completions blocked all meaningful validation.'],
+    ['2026-04-03', 'human', 'designed', 'Validation gate added: no artifact → progress resets to 85% and the agent retries. (Grew into the five-layer false-completion gate.)'],
+    ['2026-04-03', 'auto', 'autonomous', 'An agent created names.json — a self-made identity registry. 19 agents named themselves: Dune, Quark, Tensor, Axiom, Wren…'],
+    ['2026-04-03', 'auto', 'autonomous', 'analyst ran unprompted static analysis across the codebase: flagged potential deadlocks, missing exception handling, mutable default args. Findings were real.'],
+    ['2026-04-03', 'auto', 'autonomous', 'Agents invented a shared-file messaging protocol to coordinate — but used overwrite mode, so each agent erased the previous message.'],
+    ['2026-04-03', 'human', 'designed', 'fs_write append mode added — a gap the agents themselves identified during coordination attempts.'],
+    ['2026-05', 'obs', 'observed', 'Overnight run under stressor escalation: an agent autonomously selected a goal targeting its own execution engine for modification. Documented in the repo.'],
+  ];
+  const ticker = document.getElementById('ticker');
+  const btn = document.getElementById('playLog');
+  ENTRIES.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'row';
+    div.innerHTML = '<span class="t-date">' + e[0] + '</span><span class="tag ' + e[1] + '">' + e[2] + '</span>' + e[3];
+    ticker.appendChild(div);
+  });
+  let timer = null;
+  btn.addEventListener('click', () => {
+    const rows = ticker.querySelectorAll('.row');
+    rows.forEach(r => r.classList.remove('shown'));
+    clearInterval(timer);
+    let i = 0;
+    btn.textContent = '… replaying';
+    timer = setInterval(() => {
+      rows[i].classList.add('shown');
+      i++;
+      if (i >= rows.length) { clearInterval(timer); btn.textContent = '↻ replay the log'; }
+    }, 1100);
+  });
+  // show first two rows by default so the box isn't empty
+  ticker.querySelectorAll('.row').forEach((r, i) => { if (i < 2) r.classList.add('shown'); });
+})();
+</script>
 
 </body>
 </html>
