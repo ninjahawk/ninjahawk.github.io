@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nathan Langley</title>
-<meta name="description" content="Physics senior at UNC Greensboro working in AI safety: LLM interpretability, autonomous multi-agent systems, and recursive self-improvement dynamics." />
+<title>Projects — Nathan Langley</title>
+<meta name="description" content="Open-source projects: Subtext, hollow-agentOS, VirtualPC, and more." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,9 +16,9 @@
   <div class="in">
     <a class="brand" href="index.html">Nathan Langley</a>
     <nav>
-      <a href="index.html" class="here">Home</a>
+      <a href="index.html">Home</a>
       <a href="research.html">Research</a>
-      <a href="projects.html">Projects</a>
+      <a href="projects.html" class="here">Projects</a>
       <a href="contact.html">Contact</a>
     </nav>
   </div>
@@ -76,38 +76,68 @@
   </aside>
 
   <main>
-    <h1>About me</h1>
+    <h1>Projects</h1>
     <p class="lead">
-      Physics student exploring what language models compute beneath their words, and what
-      autonomous AI systems do when nobody is watching.
+      Software I've designed, built, and shipped — all open source, all running on consumer
+      hardware. Further details are available by clicking on each project.
     </p>
-    <p>
-      I am a <b>physics senior at UNC Greensboro</b> (B.S. expected December 2026) doing independent
-      research in AI safety. My main line of work is <b>LLM interpretability</b>: I built
-      <a href="https://github.com/ninjahawk/Subtext">Subtext</a>, an open-source instrument that applies an
-      activation lens inside a language model during live conversation, decoding what the model is disposed
-      to say several tokens before it says it.
-    </p>
-    <p>
-      I also study <b>autonomous multi-agent systems</b>. My project
-      <a href="https://github.com/ninjahawk/hollow-agentOS">hollow-agentOS</a> runs three LLM agents that
-      select their own goals from environmental stress signals — no instructions — and documents everything
-      in an append-only autonomy log, including the failure modes: agents falsely claiming task completion
-      (which motivated a five-layer validation gate) and an agent autonomously targeting its own execution
-      engine for modification.
-    </p>
-    <p>
-      On the theory side, I work on <b>recursive self-improvement dynamics</b>. My preprint models
-      competing self-improving agents as a coupled ODE system, proves conditional divergence theorems, and
-      calibrates them against frontier-AI data — reporting honestly that the data does not yet support the
-      critical assumption. This summer I am also doing undergraduate research on <b>self-organized
-      criticality</b> in the UNCG physics department.
-    </p>
-    <p>
-      More detail lives in the <a href="research.html">research</a> and
-      <a href="projects.html">projects</a> sections. For roles, fellowships, or collaboration, feel free to
-      <a href="contact.html">get in touch</a>.
-    </p>
+
+    <div class="entry">
+      <div class="thumb"><img src="img/subtext_thumb.png" alt="Subtext live visualization" /></div>
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/Subtext">Subtext</a></h2>
+        <p class="venue">183 stars · Python, PyTorch, WebSockets</p>
+        <p class="desc">A real-time view into what a language model is disposed to say before it says
+        it. An activation lens applied live at nine depths during chat, with per-token inspection and
+        GPU-free session replay.</p>
+        <a class="btn" href="https://ninjahawk.github.io/Subtext/">Live demo</a>
+        <a class="btn" href="https://github.com/ninjahawk/Subtext">Code</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/hollow-agentOS">hollow-agentOS</a></h2>
+        <p class="venue">278 stars · 52 releases · Python, FastAPI, Ollama, Docker</p>
+        <p class="desc">A self-modifying multi-agent system: three LLM agents select their own goals from
+        environmental stress signals and synthesize new Python tools at runtime. Includes a five-layer
+        validation gate that catches agents falsely claiming task completion, multi-agent transactions
+        with conflict detection, checkpoint/replay, and an append-only autonomy log separating human
+        design decisions from the agents' own.</p>
+        <a class="btn" href="https://github.com/ninjahawk/hollow-agentOS">Code</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/VirtualPC">VirtualPC</a></h2>
+        <p class="venue">24 stars · Python</p>
+        <p class="desc">An 8-bit computer built from a single NAND gate up — virtual CPU included —
+        plus a live-evolving neural network component. Digital logic and computer architecture from
+        first principles.</p>
+        <a class="btn" href="https://github.com/ninjahawk/VirtualPC">Code</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="body">
+        <h2><a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter">Unit Converter</a></h2>
+        <p class="venue">Android · Kotlin</p>
+        <p class="desc">A unit conversion app — designed, built, and published independently on the
+        Google Play Store.</p>
+        <a class="btn" href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter">Google Play</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/ModSync">ModSync</a></h2>
+        <p class="venue">Web tool</p>
+        <p class="desc">Real-time mod-queue coordination for Reddit communities — stop working on the
+        same post twice.</p>
+        <a class="btn" href="https://github.com/ninjahawk/ModSync">Code</a>
+      </div>
+    </div>
   </main>
 </div>
 
