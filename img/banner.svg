@@ -1,10 +1,12 @@
 <svg viewBox="0 0 1440 330" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0.35">
+    <linearGradient id="band" x1="0" y1="0" x2="1" y2="0.3">
       <stop offset="0" stop-color="#123246"/>
       <stop offset="0.55" stop-color="#16405e"/>
       <stop offset="1" stop-color="#2a6b8f"/>
     </linearGradient>
   </defs>
   <rect width="1440" height="330" fill="url(#band)"/>
+  <circle cx="240" cy="430" r="330" fill="#c25b45"/>
+  <circle cx="240" cy="430" r="380" fill="none" stroke="#d9bd7d" stroke-width="10"/>
 </svg>
