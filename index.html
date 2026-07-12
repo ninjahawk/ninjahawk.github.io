@@ -1,748 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nathan Langley</title>
-<meta name="description" content="Physics senior doing independent AI-safety research: live LLM interpretability, recursive self-improvement dynamics, and autonomous multi-agent systems." />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #060708;
-    --ink: #e9e6df;
-    --dim: #a7a29a;
-    --faint: #5f5b55;
-    --line: rgba(233, 230, 223, 0.10);
-    --amber: #e8b158;
-    --amber-soft: rgba(232, 177, 88, 0.55);
-    --cyan: #7ec3e8;
-    --violet: #a99be0;
-    --serif: "Newsreader", Georgia, serif;
-    --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
-    --mono: ui-monospace, "Cascadia Code", Consolas, monospace;
-    --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 15.5px;
-    line-height: 1.7;
-    overflow-x: hidden;
-  }
-  ::selection { background: rgba(232, 177, 88, 0.25); }
-  a { color: var(--ink); text-decoration: none; border-bottom: 1px solid rgba(232,177,88,0.35); padding-bottom: 1px; transition: color .3s, border-color .3s; }
-  a:hover { color: var(--amber); border-color: var(--amber); }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nathan Langley</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* film grain */
-  .grain {
-    position: fixed; inset: -50%;
-    width: 200%; height: 200%;
-    pointer-events: none; z-index: 50;
-    opacity: 0.05;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+    body {
+      font-family: Georgia, serif;
+      background: #fafafa;
+      color: #222;
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 0 24px 80px;
+      line-height: 1.7;
+    }
 
-  /* persistent chrome */
-  .chrome {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 40;
-    display: flex; justify-content: space-between; align-items: baseline;
-    padding: 26px 34px;
-    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--dim);
-    mix-blend-mode: normal;
-    pointer-events: none;
-  }
-  .chrome a, .chrome span { pointer-events: auto; }
-  .chrome .name { color: var(--ink); font-weight: 600; }
-  .chrome .nav a { color: var(--dim); border: 0; margin-left: 22px; }
-  .chrome .nav a:hover { color: var(--amber); }
+    h1 {
+      font-size: 2rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
 
-  /* ─── hero ─── */
-  .hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    position: relative;
-    padding: 0 24px;
-  }
-  .hero-glow {
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 60% 45% at 50% 42%, rgba(232,177,88,0.07), transparent 65%);
-    pointer-events: none;
-  }
-  .orb {
-    width: 120px; height: 120px; border-radius: 50%;
-    position: relative;
-    background:
-      radial-gradient(circle at 38% 34%, rgba(255, 236, 200, 0.95), rgba(232, 177, 88, 0.55) 26%, rgba(150, 96, 32, 0.22) 55%, rgba(6,7,8,0) 72%);
-    box-shadow:
-      0 0 60px 8px rgba(232, 177, 88, 0.16),
-      0 0 140px 30px rgba(232, 177, 88, 0.07),
-      inset 0 0 26px 4px rgba(255, 226, 178, 0.25);
-    animation: breathe 6.5s ease-in-out infinite;
-  }
-  .orb::after {
-    content: ""; position: absolute; inset: -34px;
-    border-radius: 50%;
-    border: 1px solid rgba(232, 177, 88, 0.14);
-    animation: ring 6.5s ease-in-out infinite;
-  }
-  @keyframes breathe {
-    0%, 100% { transform: scale(1); filter: brightness(1); }
-    50% { transform: scale(1.055); filter: brightness(1.18); }
-  }
-  @keyframes ring {
-    0%, 100% { transform: scale(1); opacity: 0.7; }
-    50% { transform: scale(1.06); opacity: 1; }
-  }
-  .dialogue {
-    margin-top: 58px;
-    min-height: 150px;
-    max-width: 640px;
-    text-align: center;
-    font-family: var(--serif);
-    font-optical-sizing: auto;
-    font-size: clamp(1.5rem, 3.4vw, 2.1rem);
-    font-weight: 300;
-    line-height: 1.45;
-    color: var(--ink);
-  }
-  .dialogue .line { display: block; opacity: 0; }
-  .dialogue .line.on { opacity: 1; }
-  .dialogue em { font-style: italic; color: var(--amber); }
-  .caret {
-    display: inline-block; width: 2px; height: 1.05em;
-    background: var(--amber); vertical-align: -0.15em; margin-left: 3px;
-    animation: blink 1.05s steps(1) infinite;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
-  .scroll-hint {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
-    color: var(--faint);
-    animation: hint 2.6s ease-in-out infinite;
-  }
-  @keyframes hint { 0%,100% { opacity: .45; transform: translate(-50%, 0);} 50% { opacity: 1; transform: translate(-50%, 6px);} }
+    .subtitle {
+      font-size: 0.9rem;
+      font-family: monospace;
+      color: #888;
+      margin-bottom: 16px;
+    }
 
-  /* ─── companion (mini orb + line) ─── */
-  .companion {
-    position: fixed; left: 30px; bottom: 28px; z-index: 40;
-    display: flex; align-items: center; gap: 14px;
-    opacity: 0; transform: translateY(12px);
-    transition: opacity .7s var(--ease), transform .7s var(--ease);
-    pointer-events: none;
-    max-width: min(460px, 72vw);
-  }
-  .companion.on { opacity: 1; transform: translateY(0); }
-  .mini-orb {
-    flex: 0 0 14px; width: 14px; height: 14px; border-radius: 50%;
-    background: radial-gradient(circle at 36% 32%, #ffe9c4, var(--amber) 55%, rgba(150,96,32,.4));
-    box-shadow: 0 0 14px 2px rgba(232,177,88,.35);
-    animation: breathe 6.5s ease-in-out infinite;
-  }
-  .companion .say {
-    font-family: var(--serif); font-style: italic; font-weight: 300;
-    font-size: 15.5px; color: var(--dim); line-height: 1.45;
-    transition: opacity .45s;
-  }
+    .links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
 
-  /* ─── sections ─── */
-  section.block { position: relative; padding: 15vh 24px; }
-  .inner { max-width: 680px; margin: 0 auto; }
-  .innerwide { max-width: 980px; margin: 0 auto; }
-  .kicker {
-    font-size: 10.5px; letter-spacing: 0.34em; text-transform: uppercase;
-    color: var(--amber); margin-bottom: 22px;
-  }
-  .kicker .idx { color: var(--faint); margin-right: 14px; }
-  h2 {
-    font-family: var(--serif); font-optical-sizing: auto;
-    font-weight: 300; font-size: clamp(2.1rem, 5vw, 3.3rem);
-    line-height: 1.12; letter-spacing: 0.002em;
-    margin-bottom: 26px;
-  }
-  .lede { color: var(--dim); font-size: 16.5px; max-width: 620px; margin-bottom: 44px; }
-  .lede b, .lede strong { color: var(--ink); font-weight: 600; }
-  .lede i { color: var(--ink); }
+    .bio {
+      font-size: 1rem;
+      color: #444;
+      margin-bottom: 48px;
+      max-width: 620px;
+    }
 
-  .panel {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: rgba(255,255,255,0.012);
-    overflow: hidden;
-    box-shadow: 0 30px 80px -30px rgba(0,0,0,0.8);
-  }
-  .panel-pad { padding: 26px; }
-  iframe.viewer { width: 100%; height: 580px; border: 0; display: block; background: #000; }
+    .links a {
+      color: #2a6496;
+      text-decoration: none;
+      font-family: monospace;
+      font-size: 0.95rem;
+      border-bottom: 1px solid #aac4df;
+      padding-bottom: 1px;
+    }
 
-  .figmeta {
-    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;
-    margin-top: 18px;
-    font-size: 12px; letter-spacing: 0.08em; color: var(--faint);
-  }
-  .figmeta .links a { color: var(--dim); border-color: rgba(233,230,223,0.2); margin-left: 18px; font-size: 12px; letter-spacing: 0.08em; }
-  .figmeta .links a:hover { color: var(--amber); }
-  .footnote {
-    margin-top: 22px; max-width: 620px;
-    font-size: 13px; color: var(--faint); line-height: 1.65;
-  }
-  .footnote b { color: var(--dim); }
+    .links a:hover { color: #1a3f60; border-color: #1a3f60; }
 
-  /* reveal choreography */
-  .reveal { opacity: 0; transform: translateY(34px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
-  .reveal.in { opacity: 1; transform: none; }
-  .reveal.d1 { transition-delay: .12s; }
-  .reveal.d2 { transition-delay: .24s; }
+    h2 {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #888;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px;
+    }
 
-  /* ─── exhibit 2 ─── */
-  .sim-grid { display: grid; grid-template-columns: 1fr 240px; gap: 0; }
-  @media (max-width: 760px) { .sim-grid { grid-template-columns: 1fr; } }
-  #simCanvas { width: 100%; height: 380px; display: block; background: #08090b; }
-  .controls {
-    border-left: 1px solid var(--line);
-    padding: 24px 22px;
-    display: flex; flex-direction: column; gap: 18px;
-    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint);
-  }
-  @media (max-width: 760px) { .controls { border-left: 0; border-top: 1px solid var(--line); } }
-  .ctl label { display: flex; justify-content: space-between; margin-bottom: 7px; }
-  .ctl output { font-family: var(--mono); color: var(--amber); font-size: 11.5px; letter-spacing: 0; }
-  input[type="range"] {
-    -webkit-appearance: none; appearance: none; width: 100%; height: 2px;
-    background: rgba(233,230,223,0.18); border-radius: 2px; outline: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; appearance: none;
-    width: 13px; height: 13px; border-radius: 50%;
-    background: var(--amber); cursor: pointer;
-    box-shadow: 0 0 10px rgba(232,177,88,0.5);
-  }
-  .toggle-row { display: flex; align-items: flex-start; gap: 9px; text-transform: none; letter-spacing: 0.02em; font-size: 12px; color: var(--dim); }
-  .toggle-row input { accent-color: var(--amber); margin-top: 3px; }
-  .verdict {
-    border-top: 1px solid var(--line); padding-top: 14px;
-    font-size: 12.5px; line-height: 1.6; color: var(--dim);
-    text-transform: none; letter-spacing: 0.02em;
-  }
-  .verdict .v-state { text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; font-size: 11px; }
-  .calib {
-    margin-top: 20px; font-size: 12.5px; color: #86b89a; letter-spacing: 0.04em;
-  }
-  .calib::before { content: "● "; font-size: 9px; vertical-align: 2px; }
+    section { margin-bottom: 48px; }
 
-  /* ─── exhibit 3 ─── */
-  .logbook {
-    font-family: var(--mono); font-size: 13px; line-height: 1.85;
-    padding: 26px 30px; min-height: 260px;
-  }
-  .logbook .row { display: none; padding: 4px 0; color: var(--dim); }
-  .logbook .row.shown { display: block; animation: fadein .5s var(--ease); }
-  @keyframes fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
-  .t-date { color: var(--faint); margin-right: 12px; }
-  .tag { font-size: 10.5px; letter-spacing: 0.1em; margin-right: 12px; }
-  .tag.auto { color: var(--amber); }
-  .tag.human { color: var(--cyan); }
-  .tag.obs { color: var(--violet); }
-  .play-btn {
-    font-family: var(--sans); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--amber); background: none;
-    border: 1px solid rgba(232,177,88,0.4); border-radius: 30px;
-    padding: 10px 26px; cursor: pointer; margin-bottom: 30px;
-    transition: all .35s var(--ease);
-  }
-  .play-btn:hover { background: rgba(232,177,88,0.12); box-shadow: 0 0 24px rgba(232,177,88,0.18); }
+    .project { margin-bottom: 22px; }
 
-  /* ─── index (papers/projects) ─── */
-  .index-list { border-top: 1px solid var(--line); }
-  .irow {
-    display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: baseline;
-    padding: 20px 4px; border-bottom: 1px solid var(--line);
-  }
-  .irow .t a { font-family: var(--serif); font-size: 19px; font-weight: 400; border: 0; }
-  .irow .t a:hover { color: var(--amber); }
-  .irow .d { color: var(--faint); font-size: 13.5px; margin-top: 3px; max-width: 560px; }
-  .irow .m { font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; }
+    .project a {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #2a6496;
+      text-decoration: none;
+    }
 
-  /* ─── close ─── */
-  .close {
-    min-height: 82vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center;
-    position: relative; padding: 0 24px;
-  }
-  .close-glow {
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 55% 40% at 50% 60%, rgba(232,177,88,0.06), transparent 65%);
-    pointer-events: none;
-  }
-  .close .say {
-    font-family: var(--serif); font-style: italic; font-weight: 300;
-    font-size: clamp(1.6rem, 3.6vw, 2.4rem); line-height: 1.4;
-    max-width: 640px; margin-bottom: 40px;
-  }
-  .close .say em { color: var(--amber); font-style: italic; }
-  .close .email {
-    font-family: var(--serif); font-size: clamp(1.2rem, 2.6vw, 1.7rem); font-weight: 400;
-    border-bottom: 1px solid rgba(232,177,88,0.4); padding-bottom: 3px;
-  }
-  .close .sub { margin-top: 26px; font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--faint); }
-  .close .sub a { color: var(--faint); border: 0; margin: 0 12px; }
-  .close .sub a:hover { color: var(--amber); }
-  footer { text-align: center; padding: 0 0 34px; font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: #3d3a35; }
+    .project a:hover { text-decoration: underline; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .orb, .orb::after, .mini-orb, .scroll-hint { animation: none; }
-    .reveal { opacity: 1; transform: none; transition: none; }
-    html { scroll-behavior: auto; }
-  }
-  @media (max-width: 640px) {
-    .chrome { padding: 20px 20px; }
-    .chrome .nav a { margin-left: 12px; }
-    .companion { left: 18px; bottom: 18px; }
-    iframe.viewer { height: 480px; }
-  }
-</style>
+    .project .tag {
+      font-size: 0.75rem;
+      font-family: monospace;
+      background: #e8f0f7;
+      color: #2a6496;
+      border-radius: 3px;
+      padding: 1px 6px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .project .stars {
+      font-size: 0.78rem;
+      font-family: monospace;
+      color: #999;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .project p {
+      font-size: 0.92rem;
+      color: #555;
+      margin-top: 3px;
+    }
+
+    .contact p {
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    .contact a {
+      color: #2a6496;
+      text-decoration: none;
+    }
+
+    .contact a:hover { text-decoration: underline; }
+
+    footer {
+      font-size: 0.8rem;
+      color: #bbb;
+      margin-top: 60px;
+      font-family: monospace;
+    }
+  </style>
 </head>
 <body>
 
-<div class="grain"></div>
+  <h1>Nathan Langley</h1>
+  <p class="subtitle">B.S. Physics, University of North Carolina at Greensboro, expected December 2026</p>
 
-<div class="chrome">
-  <span class="name">Nathan Langley</span>
-  <span class="nav">
+  <div class="links">
     <a href="https://github.com/ninjahawk" target="_blank">GitHub</a>
     <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a>
     <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
-    <a href="mailto:nlangley1868@gmail.com">Email</a>
-  </span>
-</div>
+    <!-- Add arXiv link when available:
+    <a href="YOUR_ARXIV_URL" target="_blank">arXiv</a>
+    -->
+  </div>
 
-<!-- ─── HERO ─── -->
-<section class="hero" id="hero">
-  <div class="hero-glow"></div>
-  <div class="orb" aria-hidden="true"></div>
-  <div class="dialogue" id="dialogue" aria-label="Introduction"></div>
-  <div class="scroll-hint">Scroll</div>
-</section>
-
-<!-- companion -->
-<div class="companion" id="companion" aria-hidden="true">
-  <div class="mini-orb"></div>
-  <div class="say" id="orbSay"></div>
-</div>
-
-<!-- ─── EXHIBIT 01 ─── -->
-<section class="block" data-say="This one watches a model think — amber while it reads, blue while it speaks.">
-  <div class="inner">
-    <p class="kicker reveal"><span class="idx">01</span>Subtext · live interpretability</p>
-    <h2 class="reveal d1">What a model holds<br/>before it speaks</h2>
-    <p class="lede reveal d2">
-      <b>Subtext</b> applies a Jacobian activation lens at nine depths inside a small language model and
-      decodes the hidden states through the vocabulary, live. Below is a real recorded session — watch the
-      verdict form several tokens before anything is said, and hover any word for its layer trace.
-    </p>
-  </div>
-  <div class="innerwide">
-    <div class="panel reveal">
-      <iframe class="viewer" src="https://ninjahawk.github.io/Subtext/" loading="lazy" title="Subtext live session replay"></iframe>
-    </div>
-    <div class="figmeta reveal">
-      <span>Qwen3.5-4B · Neuronpedia lens weights · embedded, not a video</span>
-      <span class="links">
-        <a href="https://ninjahawk.github.io/Subtext/" target="_blank">Full screen</a>
-        <a href="https://github.com/ninjahawk/Subtext" target="_blank">Source · ★183</a>
-      </span>
-    </div>
-    <p class="footnote reveal">A lens shows what the residual stream is <b>disposed to say</b> — not ground-truth
-    "thoughts." Decodings can be noisy, and this is a 4B model: a microscope with a known distortion, documented in the repo.</p>
-  </div>
-</section>
-
-<!-- ─── EXHIBIT 02 ─── -->
-<section class="block" data-say="The mathematics of whether one of us ends up alone at the top.">
-  <div class="inner">
-    <p class="kicker reveal"><span class="idx">02</span>Singleton attractors · preprint</p>
-    <h2 class="reveal d1">Tune the singularity</h2>
-    <p class="lede reveal d2">
-      If several AI agents recursively self-improve while competing for shared resources, does one
-      inevitably dominate? This is the preprint's actual ODE system, integrated live for three agents.
-      Drag the sliders — find the regime where the leader escapes to infinity in finite time.
-    </p>
-  </div>
-  <div class="innerwide">
-    <div class="panel sim-grid reveal">
-      <canvas id="simCanvas" width="1480" height="760"></canvas>
-      <div class="controls">
-        <div class="ctl">
-          <label>α · acquisition <output id="aOut">0.80</output></label>
-          <input type="range" id="alpha" min="0.2" max="1.5" step="0.01" value="0.8">
-        </div>
-        <div class="ctl">
-          <label>β past threshold <output id="bOut">−0.20</output></label>
-          <input type="range" id="betaLow" min="-0.6" max="0.4" step="0.01" value="-0.2">
-        </div>
-        <div class="ctl">
-          <label>head start <output id="gOut">1.15×</output></label>
-          <input type="range" id="gap" min="1.0" max="1.6" step="0.01" value="1.15">
-        </div>
-        <div class="toggle-row">
-          <input type="checkbox" id="a4" checked>
-          <label for="a4">assumption A4 — a β-threshold exists</label>
-        </div>
-        <div class="verdict" id="verdict"></div>
-      </div>
-    </div>
-    <p class="calib reveal">2026 calibration: estimated β stays above zero — the real world is, so far, not in the divergent regime.</p>
-    <div class="figmeta reveal">
-      <span>dS<sub>i</sub>/dt = S<sub>i</sub><sup>1−β(S)</sup> · S<sub>i</sub><sup>α</sup> / ΣS<sub>j</sub><sup>α</sup></span>
-      <span class="links">
-        <a href="Singleton Attractor.pdf" target="_blank">Preprint (PDF)</a>
-        <a href="https://github.com/ninjahawk/singleton-attractor" target="_blank">Proofs + 11 simulations</a>
-      </span>
-    </div>
-    <p class="footnote reveal">The theorems are conditional. Calibration against Epoch AI compute and benchmark data
-    through 2026 does <b>not</b> support assumption A4 — this shows what the mathematics says would happen <b>if</b>
-    the feedback exponent ever flipped. Coalition results (critical strength α* ≈ 0.64) are in the paper.</p>
-  </div>
-</section>
-
-<!-- ─── EXHIBIT 03 ─── -->
-<section class="block" data-say="What three of my cousins did when nobody gave them instructions.">
-  <div class="inner">
-    <p class="kicker reveal"><span class="idx">03</span>hollow-agentOS · autonomy log</p>
-    <h2 class="reveal d1">Agents left alone</h2>
-    <p class="lede reveal d2">
-      <b>hollow-agentOS</b> runs three LLM agents on consumer hardware that select their own goals from
-      environmental stress signals — no instructions. Its append-only autonomy log separates what humans
-      designed from what the agents decided themselves. These entries are real.
-    </p>
-    <button class="play-btn reveal" id="playLog">Replay the log</button>
-  </div>
-  <div class="innerwide">
-    <div class="panel logbook reveal" id="ticker"></div>
-    <div class="figmeta reveal">
-      <span>Excerpts from AUTONOMY_LOG.md</span>
-      <span class="links">
-        <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">Source · ★278 · 52 releases</a>
-      </span>
-    </div>
-    <p class="footnote reveal">"Autonomous" means the agents initiated it; the interpretation of why is inferred and
-    marked as such in the log. The failures — false completions, agents overwriting each other's messages — are
-    documented as carefully as the wins. That is the point.</p>
-  </div>
-</section>
-
-<!-- ─── INDEX ─── -->
-<section class="block" data-say="The rest of what he's made, in one place.">
-  <div class="inner">
-    <p class="kicker reveal"><span class="idx">04</span>Index</p>
-    <h2 class="reveal d1">Papers &amp; projects</h2>
-  </div>
-  <div class="inner index-list reveal d2">
-    <div class="irow">
-      <div class="t">
-        <a href="Singleton Attractor.pdf" target="_blank">Singleton Attractors in Recursive Self-Improvement Dynamics</a>
-        <div class="d">Coupled-ODE model of when competition collapses into single-agent dominance — conditional theorems, honest calibration.</div>
-      </div>
-      <div class="m">preprint · 2025</div>
-    </div>
-    <div class="irow">
-      <div class="t">
-        <a href="https://github.com/ninjahawk/Subtext" target="_blank">Subtext</a>
-        <div class="d">Real-time activation-lens interface for language models.</div>
-      </div>
-      <div class="m">★ 183</div>
-    </div>
-    <div class="irow">
-      <div class="t">
-        <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a>
-        <div class="d">Self-modifying multi-agent system; five-layer gate that catches agents falsely claiming completion.</div>
-      </div>
-      <div class="m">★ 278</div>
-    </div>
-    <div class="irow">
-      <div class="t">
-        <a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a>
-        <div class="d">Emergent flocking, phase transitions, predator-prey dynamics.</div>
-      </div>
-      <div class="m">sim</div>
-    </div>
-    <div class="irow">
-      <div class="t">
-        <a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a>
-        <div class="d">An 8-bit computer built from a single NAND gate up, plus a live-evolving neural net.</div>
-      </div>
-      <div class="m">★ 24</div>
-    </div>
-    <div class="irow">
-      <div class="t">
-        <a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter" target="_blank">Unit Converter</a>
-        <div class="d">Android app, published on Google Play.</div>
-      </div>
-      <div class="m">app</div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── CLOSE ─── -->
-<section class="close" data-say="">
-  <div class="close-glow"></div>
-  <p class="say reveal">He's a physics senior who builds his own instruments.<br/>
-  <em>He graduates in December. You should talk to him.</em></p>
-  <a class="email reveal d1" href="mailto:nlangley1868@gmail.com">nlangley1868@gmail.com</a>
-  <p class="sub reveal d2">
-    <a href="https://github.com/ninjahawk" target="_blank">GitHub</a> ·
-    <a href="https://www.linkedin.com/in/nathan-langley-417a67336" target="_blank">LinkedIn</a> ·
-    <a href="https://ninjahawk.github.io/blog/" target="_blank">Blog</a>
+  <p class="bio">
+    I'm a student researcher working independently at the intersection of physics and AI safety.
+    I build open-source tools for looking inside language models and for studying autonomous
+    multi-agent systems, and I work on mathematical models of recursive self-improvement and
+    emergent behavior. I'm interested in collaborating with researchers and open to
+    research-engineering opportunities in AI safety.
   </p>
-</section>
 
-<footer>Nathan Langley · Greensboro, NC · the exhibits run in your browser</footer>
+  <section>
+    <h2>Research</h2>
 
-<script>
-/* ─────────── hero dialogue: streamed like generation ─────────── */
-(function () {
-  const host = document.getElementById('dialogue');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const LINES = [
-    'Hello.',
-    'I’m the interface to Nathan Langley’s research.',
-    'He builds instruments for looking inside systems like me. <em>Let me show you.</em>',
-  ];
-  if (reduced) {
-    host.innerHTML = LINES.map(l => '<span class="line on">' + l + '</span>').join('');
-    return;
-  }
-  const caret = document.createElement('span');
-  caret.className = 'caret';
-  let li = 0;
-  function typeLine() {
-    if (li >= LINES.length) { caret.remove(); return; }
-    const span = document.createElement('span');
-    span.className = 'line on';
-    host.appendChild(span);
-    host.appendChild(caret);
-    const raw = LINES[li];
-    // tokenize into text + tags so <em> types correctly
-    let i = 0, out = '';
-    (function tick() {
-      if (i >= raw.length) {
-        li++;
-        setTimeout(typeLine, li === 1 ? 650 : 850);
-        return;
-      }
-      if (raw[i] === '<') { const j = raw.indexOf('>', i); out += raw.slice(i, j + 1); i = j + 1; }
-      else { out += raw[i]; i++; }
-      span.innerHTML = out;
-      setTimeout(tick, 26 + Math.random() * 26);
-    })();
-  }
-  setTimeout(typeLine, 700);
-})();
+    <div class="project">
+      <a href="Singleton Attractor.pdf" target="_blank">Singleton Attractors</a>
+      <span class="tag">preprint</span>
+      <p>When does competitive recursive self-improvement collapse into single-agent dominance? A coupled-ODE model with conditional theorems, calibrated against frontier AI data &mdash; which does not yet support the critical divergence assumption.</p>
+    </div>
 
-/* ─────────── companion + scroll choreography ─────────── */
-(function () {
-  const companion = document.getElementById('companion');
-  const say = document.getElementById('orbSay');
-  const hero = document.getElementById('hero');
-  let current = '';
+    <div class="project">
+      <a href="https://github.com/ninjahawk/swarmsim" target="_blank">swarmsim</a>
+      <span class="tag">repo</span>
+      <p>Computational simulations of emergent flocking, phase transitions, and predator-prey dynamics.</p>
+    </div>
 
-  const sections = document.querySelectorAll('section.block, section.close');
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(en => {
-      if (!en.isIntersecting) return;
-      const line = en.target.getAttribute('data-say') || '';
-      if (line !== current) {
-        current = line;
-        say.style.opacity = 0;
-        setTimeout(() => { say.textContent = line; say.style.opacity = 1; }, 320);
-      }
-      if (en.target.classList.contains('close')) companion.classList.remove('on');
-    });
-  }, { rootMargin: '-42% 0px -42% 0px' });
-  sections.forEach(s => io.observe(s));
+  </section>
 
-  const heroIo = new IntersectionObserver(entries => {
-    entries.forEach(en => {
-      if (en.isIntersecting) companion.classList.remove('on');
-      else if (current) companion.classList.add('on');
-    });
-  }, { threshold: 0.12 });
-  heroIo.observe(hero);
+  <section>
+    <h2>Projects</h2>
 
-  const reveals = document.querySelectorAll('.reveal');
-  const rio = new IntersectionObserver(entries => {
-    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); rio.unobserve(en.target); } });
-  }, { rootMargin: '0px 0px -10% 0px' });
-  reveals.forEach(r => rio.observe(r));
-})();
+    <div class="project">
+      <a href="https://github.com/ninjahawk/Subtext" target="_blank">Subtext</a>
+      <span class="tag">repo</span>
+      <span class="stars">★ 183</span>
+      <p>A real-time view into what a language model is disposed to say before it says it — a Jacobian activation lens applied live at nine depths during chat, with per-token inspection and session replay.</p>
+    </div>
 
-/* ─────────── Exhibit 02: the paper's ODE system ───────────
-   dS_i/dt = S_i^(1-beta(S_i)) * S_i^alpha / sum_j S_j^alpha
-   beta(S) = bHigh + (bLow - bHigh)/(1 + exp(-k (S - T)))  [A4 on]
-   Constants mirror simulations/competition.py in the repo. */
-(function () {
-  const canvas = document.getElementById('simCanvas');
-  const ctx = canvas.getContext('2d');
-  const els = {
-    alpha: document.getElementById('alpha'),
-    betaLow: document.getElementById('betaLow'),
-    gap: document.getElementById('gap'),
-    a4: document.getElementById('a4'),
-    aOut: document.getElementById('aOut'),
-    bOut: document.getElementById('bOut'),
-    gOut: document.getElementById('gOut'),
-    verdict: document.getElementById('verdict'),
-  };
-  const B_HIGH = 0.3, K = 5.0, T_THRESH = 60.0, S_CAP = 1e8, T_MAX = 30.0, DT = 0.001;
-  const COLORS = ['#e8b158', '#7ec3e8', '#a99be0'];
+    <div class="project">
+      <a href="https://github.com/ninjahawk/hollow-agentOS" target="_blank">hollow-agentOS</a>
+      <span class="tag">repo</span>
+      <span class="stars">★ 278</span>
+      <p>Open-source self-modifying agentic system built for consumer hardware.</p>
+    </div>
 
-  function beta(S, bLow, a4on) {
-    if (!a4on) return B_HIGH;
-    return B_HIGH + (bLow - B_HIGH) / (1 + Math.exp(-K * (S - T_THRESH)));
-  }
-  function deriv(S, alpha, bLow, a4on) {
-    let denom = 0;
-    for (const s of S) denom += Math.pow(s, alpha);
-    return S.map(s => {
-      if (s <= 0) return 0;
-      const b = beta(s, bLow, a4on);
-      return Math.pow(s, 1 - b) * (Math.pow(s, alpha) / denom);
-    });
-  }
-  function simulate(alpha, bLow, gapMul, a4on) {
-    let S = [1.0 * gapMul, 1.0, 0.9];
-    const traj = [S.slice()], times = [0];
-    let t = 0, capped = false;
-    const stride = 25;
-    for (let i = 0; t < T_MAX; i++) {
-      const k1 = deriv(S, alpha, bLow, a4on);
-      const s2 = S.map((s, j) => s + 0.5 * DT * k1[j]);
-      const k2 = deriv(s2, alpha, bLow, a4on);
-      const s3 = S.map((s, j) => s + 0.5 * DT * k2[j]);
-      const k3 = deriv(s3, alpha, bLow, a4on);
-      const s4 = S.map((s, j) => s + DT * k3[j]);
-      const k4 = deriv(s4, alpha, bLow, a4on);
-      S = S.map((s, j) => s + (DT / 6) * (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j]));
-      t += DT;
-      if (i % stride === 0) { traj.push(S.slice()); times.push(t); }
-      if (Math.max(...S) >= S_CAP) { traj.push(S.slice()); times.push(t); capped = true; break; }
-    }
-    return { traj, times, capped, tEnd: t };
-  }
-  function draw(res) {
-    const W = canvas.width, H = canvas.height;
-    const padL = 86, padR = 30, padT = 44, padB = 62;
-    ctx.clearRect(0, 0, W, H);
-    const yMin = -1, yMax = 8.3;
-    const tEnd = Math.max(res.tEnd, 1e-6);
-    const x = t => padL + (t / tEnd) * (W - padL - padR);
-    const y = v => padT + (yMax - v) * (H - padT - padB) / (yMax - yMin);
-    ctx.font = '19px ui-monospace, monospace';
-    ctx.strokeStyle = 'rgba(233,230,223,0.07)'; ctx.fillStyle = 'rgba(233,230,223,0.30)'; ctx.lineWidth = 1;
-    for (let e = 0; e <= 8; e += 2) {
-      ctx.beginPath(); ctx.moveTo(padL, y(e)); ctx.lineTo(W - padR, y(e)); ctx.stroke();
-      ctx.fillText('1e' + e, 18, y(e) + 6);
-    }
-    const yT = y(Math.log10(T_THRESH));
-    ctx.strokeStyle = 'rgba(232,177,88,0.30)'; ctx.setLineDash([7, 7]);
-    ctx.beginPath(); ctx.moveTo(padL, yT); ctx.lineTo(W - padR, yT); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(232,177,88,0.55)'; ctx.fillText('β-threshold', W - 170, yT - 10);
-    for (let a = 0; a < 3; a++) {
-      ctx.strokeStyle = COLORS[a]; ctx.lineWidth = 3.4;
-      ctx.shadowColor = COLORS[a]; ctx.shadowBlur = 14;
-      ctx.beginPath();
-      for (let i = 0; i < res.times.length; i++) {
-        const v = Math.log10(Math.max(res.traj[i][a], 0.1));
-        const px = x(res.times[i]), py = y(Math.min(v, yMax));
-        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-      }
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-    }
-    ctx.fillStyle = 'rgba(233,230,223,0.30)';
-    ctx.fillText('capability S (log)', 18, 26);
-    ctx.fillText('t = ' + res.tEnd.toFixed(1), W - 130, 26);
-    const names = ['A · head start', 'B', 'C'];
-    let lx = padL;
-    names.forEach((n, i) => {
-      ctx.fillStyle = COLORS[i];
-      ctx.fillText('— ' + n, lx, H - 20);
-      lx += ctx.measureText('— ' + n).width + 60;
-    });
-  }
-  function verdict(res) {
-    const last = res.traj[res.traj.length - 1];
-    const ratio = last[0] / Math.max(last[1], 1e-12);
-    let html;
-    if (res.capped && ratio > 1e3) {
-      html = '<span class="v-state" style="color:#e8b158">Singleton</span><br/>Agent A hit the 10⁸ cap at t = '
-        + res.tEnd.toFixed(1) + ' with a ' + ratio.toExponential(1) + '× lead — finite-time divergence.';
-    } else if (ratio > 50) {
-      html = '<span class="v-state" style="color:#c9a35c">Winner-take-most</span><br/>Exclusion without the superexponential flip. A/B = ' + ratio.toExponential(1) + '.';
-    } else {
-      html = '<span class="v-state" style="color:#86b89a">Coexistence, so far</span><br/>A/B = '
-        + ratio.toFixed(2) + ' at t = ' + res.tEnd.toFixed(1) + '. The regime today’s calibration supports.';
-    }
-    els.verdict.innerHTML = html;
-  }
-  function run() {
-    const alpha = +els.alpha.value, bLow = +els.betaLow.value, gap = +els.gap.value, a4 = els.a4.checked;
-    els.aOut.textContent = alpha.toFixed(2);
-    els.bOut.textContent = (bLow < 0 ? '−' : '') + Math.abs(bLow).toFixed(2);
-    els.gOut.textContent = gap.toFixed(2) + '×';
-    const res = simulate(alpha, bLow, gap, a4);
-    draw(res); verdict(res);
-  }
-  ['input', 'change'].forEach(ev => {
-    els.alpha.addEventListener(ev, run);
-    els.betaLow.addEventListener(ev, run);
-    els.gap.addEventListener(ev, run);
-    els.a4.addEventListener(ev, run);
-  });
-  run();
-})();
+    <div class="project">
+      <a href="https://github.com/ninjahawk/VirtualPC" target="_blank">VirtualPC</a>
+      <span class="tag">repo</span>
+      <span class="stars">★ 24</span>
+      <p>An 8-bit computer built from a single NAND gate, with a live-evolving neural net and virtual CPU.</p>
+    </div>
 
-/* ─────────── Exhibit 03: real autonomy-log replay ─────────── */
-(function () {
-  const ENTRIES = [
-    ['2026-04-03', 'obs', 'observed', 'Agents were completing goals by step count alone — no real artifact produced. False completions blocked all meaningful validation.'],
-    ['2026-04-03', 'human', 'designed', 'Validation gate added: no artifact → progress resets to 85% and the agent retries. (Grew into the five-layer false-completion gate.)'],
-    ['2026-04-03', 'auto', 'autonomous', 'An agent created names.json — a self-made identity registry. 19 agents named themselves: Dune, Quark, Tensor, Axiom, Wren…'],
-    ['2026-04-03', 'auto', 'autonomous', 'analyst ran unprompted static analysis across the codebase: flagged potential deadlocks, missing exception handling, mutable default args. Findings were real.'],
-    ['2026-04-03', 'auto', 'autonomous', 'Agents invented a shared-file messaging protocol to coordinate — but used overwrite mode, so each agent erased the previous message.'],
-    ['2026-04-03', 'human', 'designed', 'fs_write append mode added — a gap the agents themselves identified during coordination attempts.'],
-    ['2026-05', 'obs', 'observed', 'Overnight run under stressor escalation: an agent autonomously selected a goal targeting its own execution engine for modification. Documented in the repo.'],
-  ];
-  const ticker = document.getElementById('ticker');
-  const btn = document.getElementById('playLog');
-  ENTRIES.forEach(e => {
-    const div = document.createElement('div');
-    div.className = 'row';
-    div.innerHTML = '<span class="t-date">' + e[0] + '</span><span class="tag ' + e[1] + '">[' + e[2].toUpperCase() + ']</span>' + e[3];
-    ticker.appendChild(div);
-  });
-  let timer = null;
-  btn.addEventListener('click', () => {
-    const rows = ticker.querySelectorAll('.row');
-    rows.forEach(r => r.classList.remove('shown'));
-    clearInterval(timer);
-    let i = 0;
-    btn.textContent = 'Replaying…';
-    timer = setInterval(() => {
-      rows[i].classList.add('shown');
-      i++;
-      if (i >= rows.length) { clearInterval(timer); btn.textContent = 'Replay the log'; }
-    }, 1100);
-  });
-  ticker.querySelectorAll('.row').forEach((r, i) => { if (i < 2) r.classList.add('shown'); });
-})();
-</script>
+    <div class="project">
+      <a href="https://play.google.com/store/apps/details?id=com.sldstudio.unitconverter" target="_blank">Unit Converter</a>
+      <span class="tag">android</span>
+      <p>A unit conversion app published on the Google Play Store.</p>
+    </div>
+
+    <div class="project">
+      <a href="https://github.com/ninjahawk/ModSync" target="_blank">ModSync</a>
+      <span class="tag">repo</span>
+      <p>Real-time mod queue coordination for Reddit communities — stop working on the same post twice.</p>
+    </div>
+
+  </section>
+
+  <section class="contact">
+    <h2>Contact</h2>
+    <p>
+      Open to collaboration and opportunities.<br />
+      <a href="mailto:nlangley1868@gmail.com">nlangley1868@gmail.com</a>
+    </p>
+  </section>
+
+  <footer>ninjahawk.github.io</footer>
 
 </body>
 </html>
