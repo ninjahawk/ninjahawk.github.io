@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Projects — Nathan Langley</title>
-<meta name="description" content="Projects: Orb (proactive AI assistant on the App Store), hollow-agentOS, XViral, VirtualPC, and more." />
+<meta name="description" content="Projects: Orb (proactive AI assistant on the App Store), hollow-agentOS, Redcoder, XViral, Backlot, KillClawd, bongochat, intratexxxt, VirtualPC, and more." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -76,11 +76,23 @@
       <div class="thumb"><img src="img/hollow_thumb.png?v=5" alt="hollow-agentOS terminal demo" /></div>
       <div class="body">
         <h2><a href="https://github.com/ninjahawk/hollow-agentOS">hollow-agentOS</a></h2>
-        <p class="venue">278 stars · 52 releases · Python, FastAPI, Ollama, Docker</p>
+        <p class="venue">309 stars · 52 releases · Python, FastAPI, Ollama, Docker</p>
         <p class="desc">A self-modifying multi-agent system: three LLM agents select their own goals
         and write new Python tools at runtime, behind a validation gate that catches agents falsely
         claiming task completion.</p>
         <a class="btn" href="https://github.com/ninjahawk/hollow-agentOS">Code</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="thumb"><img src="img/redcoder_thumb.png?v=5" alt="Redcoder terminal logo" /></div>
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/redcoder">Redcoder</a></h2>
+        <p class="venue">Python, standard library only · Ollama · offline Whisper voice</p>
+        <p class="desc">A terminal coding agent in the style of Claude Code, driven entirely by a local model through
+        Ollama. It reads, edits and runs code on your machine with live diff streaming, a model
+        switcher and push-to-talk voice. Fully offline; nothing is logged.</p>
+        <a class="btn" href="https://github.com/ninjahawk/redcoder">Code</a>
       </div>
     </div>
 
@@ -94,6 +106,56 @@
         free parameter, fitted against real posts.</p>
         <a class="btn" href="https://github.com/ninjahawk/XViral">Code</a>
         <a class="btn" href="https://github.com/ninjahawk/XViral/blob/main/FINDINGS.md">Findings</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="thumb"><img src="img/backlot_thumb.png?v=5" alt="Backlot screenplay timeline" /></div>
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/Backlot">Backlot</a></h2>
+        <p class="venue">Node · mineflayer</p>
+        <p class="desc">A screenplay engine for Minecraft. Write a scene, cast bots, and every beat fires on an
+        absolute-time timeline, so a bit lands at the same instant on every take instead of drifting
+        with each action's duration.</p>
+        <a class="btn" href="https://github.com/ninjahawk/Backlot">Code</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="thumb"><img src="img/killclawd_thumb.png?v=5" alt="KillClawd desktop pet banner" /></div>
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/KillClawd">KillClawd</a></h2>
+        <p class="venue">17 stars · Electron, vanilla JS, Ollama</p>
+        <p class="desc">A desktop pet run by a local LLM: a small crab that lives in a transparent overlay, wanders
+        the screen, reacts to the cursor, fights mobs and keeps a journal. About 2K lines of code,
+        no cloud.</p>
+        <a class="btn" href="https://github.com/ninjahawk/KillClawd">Code</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="thumb"><img src="img/bongochat_thumb.png?v=5" alt="bongochat chance-normalized benchmark chart" /></div>
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/bongochat">bongochat</a></h2>
+        <p class="venue">125M parameters · trained from scratch on one RTX 5070 in 2.3 GPU-hours · built on nanochat</p>
+        <p class="desc">A full tokenizer, pretraining and SFT run done locally, with Windows fixes for nanochat, then
+        benchmarked against 2026 frontier models on full test sets. Raw MMLU is 30.1%; normalized
+        for chance it is 6.8%, which is the point of the chart.</p>
+        <a class="btn" href="https://github.com/ninjahawk/bongochat/releases/tag/v1.0">Weights</a>
+        <a class="btn" href="https://github.com/ninjahawk/bongochat">Code</a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="thumb"><img src="img/intratexxxt_thumb.png?v=5" alt="intratexxxt staircase of SHA-256 work per stage" /></div>
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/intratexxxt">intratexxxt</a></h2>
+        <p class="venue">Python · open challenge since October 2026</p>
+        <p class="desc">An unbounded recursive cipher. Each stage is a real proof-of-work problem whose solution is
+        the only way to generate the next stage, so there is no fixed set of layers on disk to
+        inspect. The canonical chain is checked on every push by two independent implementations.</p>
+        <a class="btn" href="https://github.com/ninjahawk/intratexxxt/blob/main/challenge.json">Challenge</a>
+        <a class="btn" href="https://github.com/ninjahawk/intratexxxt">Code</a>
       </div>
     </div>
 

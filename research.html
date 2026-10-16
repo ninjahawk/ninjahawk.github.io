@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Research — Nathan Langley</title>
-<meta name="description" content="Research: recursive self-improvement dynamics, LLM interpretability with Subtext, Confessor forensic agent audits, Glemton from-scratch language models, and emergent multi-agent behavior." />
+<meta name="description" content="Research: livenerf post-launch model drift benchmark, recursive self-improvement dynamics, LLM interpretability with Subtext, Confessor forensic agent audits, Glemton from-scratch language models, and emergent multi-agent behavior." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -59,6 +59,21 @@
     </p>
 
     <div class="entry">
+      <div class="thumb"><img src="img/livenerf_thumb.png?v=5" alt="livenerf daily score chart for Claude Opus 5.5" /></div>
+      <div class="body">
+        <h2><a href="https://github.com/ninjahawk/livenerf">livenerf: does a frontier model get quietly worse after launch?</a></h2>
+        <p class="authors"><b>Nathan Langley</b></p>
+        <p class="venue">Pre-registered 30-day benchmark series · 1.5K GitHub stars · running since September 2026</p>
+        <p class="desc">A daily, append-only benchmark that tests the "model nerf" claim. A locked panel of 78 GPQA,
+        MMLU-Pro, competition-math and AIME questions, chosen because the model only sometimes gets
+        them right, is rerun every day against a 10-day launch baseline. The design, the detectable
+        effect size and every deviation were published before the results.</p>
+        <a class="btn" href="https://github.com/ninjahawk/livenerf">Code</a>
+        <a class="btn" href="https://discord.gg/JRGCUg2pyX">Discord</a>
+      </div>
+    </div>
+
+    <div class="entry">
       <div class="thumb"><img src="img/singleton_thumb.png?v=5" alt="Finite-time separation figure from the singleton-attractor model" /></div>
       <div class="body">
         <h2><a href="Singleton Attractor.pdf">Singleton Attractors in Recursive Self-Improvement Dynamics</a></h2>
@@ -76,7 +91,7 @@
       <div class="body">
         <h2><a href="https://github.com/ninjahawk/Subtext">Subtext: real-time activation-lens interpretability</a></h2>
         <p class="authors"><b>Nathan Langley</b></p>
-        <p class="venue">Open-source instrument — 183 GitHub stars</p>
+        <p class="venue">Open-source instrument — 245 GitHub stars</p>
         <p class="desc">A Jacobian activation lens at nine depths inside a live LLM, decoding hidden
         states through the vocabulary. Runs in the browser, no GPU required.</p>
         <a class="btn" href="https://ninjahawk.github.io/Subtext/">Live demo</a>
